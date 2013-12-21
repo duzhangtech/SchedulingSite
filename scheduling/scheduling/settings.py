@@ -85,3 +85,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+# Additional locations of static files
+
+# STATICFILES_DIRS = (
+#     ('assets', os.path.join(os.getcwd(),'static/')),
+#     # Put strings here, like "/home/html/static" or "C:/www/django/static".
+#     # Always use forward slashes, even on Windows.
+#     # Don't forget to use absolute paths, not relative paths.
+# )
+
+# # List of finder classes that know how to find static files in
+# # various locations.
+# STATICFILES_FINDERS = (
+#     'django.contrib.staticfiles.finders.FileSystemFinder',
+#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+# #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+# )

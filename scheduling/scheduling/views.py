@@ -24,7 +24,10 @@ def loggedin(request):
 	return render_to_response('loggedin.html', {'full_name': request.user.username})
 
 def invalid_login(request):
-	return render_to_response('invalid_login.html')
+	c = {}
+	c.update(csrf(request))
+	c['last_invalid'] = True
+	return render_to_response('index.html', c)
 
 def logout(request):
 	auth.logout(request)
@@ -51,4 +54,7 @@ def register_user(request):
 
 
 def register_success(request):
-	return render_to_response('register_success.html')
+	c = {}
+	c.update(csrf(request))
+	c['last_registered'] = True
+	return render_to_response('index.html', c)

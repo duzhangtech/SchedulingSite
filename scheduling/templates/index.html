@@ -3,10 +3,19 @@
 	<p class="error">Sorry, that's not a valid username or password</p>
 {% endif %}
 
-<form action="/auth/" method="post">{% csrf_token %}
+{% if last_invalid %}
+	<h2>last login failed, please login again</h2>
+{% endif %}
+{% if last_registered %}
+	<h2>please log into your newly created account</h2>
+{% endif %}
+
+<form action="/auth/" method="POST">{% csrf_token %}
 	<label for="username">User name:</label>
 	<input type="text" name="username" value="" id="username">
 	<label for="password">Password:</label>
 	<input type="password" name="password" value="" id="password">
 	<input type="submit" value="login" />
 </form>
+
+<p><a href="/register">register</a></p>
