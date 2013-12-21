@@ -4,6 +4,8 @@
     <ul>
     	<li>{{full_name}} {# is there a way to let the generic template access this full name?#}
     	<li><a href="/logout/">logout</a>
-		<li><a href="/profile/">profile</a>
+    	<li><a href="{% url 'loggedin' %}createMtn/">organize new meeting</a>
+    	<li><a href="{% url 'loggedin' %}organized/">meetings you organized</a>
+    	<li><a href="/logout/">meetings you are invited to</a>
     </ul>
 {% endblock %}
