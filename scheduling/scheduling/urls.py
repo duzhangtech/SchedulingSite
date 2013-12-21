@@ -3,6 +3,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+	(r'^', include('userprofile.urls')),
+
 	url(r'^$',  'scheduling.views.index'),
 	url(r'^auth/$',  'scheduling.views.auth_view'),
 	url(r'^logout/$', 'scheduling.views.logout'),
