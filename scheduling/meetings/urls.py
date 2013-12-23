@@ -6,4 +6,5 @@ urlpatterns = patterns('',
     url(r'^create/$', views.create, name='create'),
     # url(r'^meeting_creation_success/$', views.meeting_creation_success, name='meeting_creation_success'),
     url(r'^organized/$', views.organized, name='organized'),
+    url(r'^invited/$', views.invited, name='invited'),
 	)

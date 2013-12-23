@@ -12,15 +12,27 @@ class Migration(SchemaMigration):
         db.create_table(u'meetings_meeting', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=20)),
-            ('organizer', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('organizer', self.gf('django.db.models.fields.related.ForeignKey')(related_name='meetings_organized', to=orm['auth.User'])),
             ('pub_date', self.gf('django.db.models.fields.DateTimeField')()),
         ))
         db.send_create_signal(u'meetings', ['Meeting'])
+
+        # Adding M2M table for field invited on 'Meeting'
+        m2m_table_name = db.shorten_name(u'meetings_meeting_invited')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('meeting', models.ForeignKey(orm[u'meetings.meeting'], null=False)),
+            ('user', models.ForeignKey(orm[u'auth.user'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['meeting_id', 'user_id'])
 
 
     def backwards(self, orm):
         # Deleting model 'Meeting'
         db.delete_table(u'meetings_meeting')
+
+        # Removing M2M table for field invited on 'Meeting'
+        db.delete_table(db.shorten_name(u'meetings_meeting_invited'))
 
 
     models = {
@@ -63,8 +75,9 @@ class Migration(SchemaMigration):
         u'meetings.meeting': {
             'Meta': {'object_name': 'Meeting'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'invited': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'meetings_invited'", 'symmetrical': 'False', 'to': u"orm['auth.User']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'organizer': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
+            'organizer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'meetings_organized'", 'to': u"orm['auth.User']"}),
             'pub_date': ('django.db.models.fields.DateTimeField', [], {})
         }
     }

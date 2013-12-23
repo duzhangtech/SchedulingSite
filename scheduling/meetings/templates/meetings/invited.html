@@ -1,0 +1,8 @@
+{% if list %} 
+	<ul>
+	{% for meeting in list %}
+		<li>{{ meeting.name }}</li>
+	{% endfor %}
+{% else %}
+	<p>No meeting is available.</p>
+{% endif %}

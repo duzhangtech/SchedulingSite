@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import auth
 from django.core.context_processors import csrf
 from forms import MyRegistrationForm
+from django.contrib.auth.decorators import login_required
 
 def index(request):
 	c = {}
@@ -20,6 +21,7 @@ def auth_view(request):
 	else:
 		return HttpResponseRedirect('/invalid')
 
+@login_required(login_url="/")
 def loggedin(request):
 	return render_to_response('loggedin.html', {'full_name': request.user.username})
 

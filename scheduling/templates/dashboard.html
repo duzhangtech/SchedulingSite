@@ -1,18 +1,17 @@
-{% load static %} 
+{% load static %}
 {# what is the difference b/t static and staticfiles #}
 {# should I put it here or down there #}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>{% block title %}My Dashboard Template{% endblock %}</title>
-    {# <link rel="stylesheet" type="text/css" href="{% static ’scheduling/normalize.css’ %}" /> #}
-    {# <link rel="stylesheet" type="text/css" href="{% static ’scheduling/grid.css’ %}" /> #}
    	
-    {# <link rel="stylesheet" type="text/css" href="{% static 'assets/normalize.css’ %}" /> #}
-    {# <link rel="stylesheet" type="text/css" href="{% static 'assets/grid.css’ %}" /> #}
+    <link rel="stylesheet" type="text/css" href="{% static "assets/normalize.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "assets/grid.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "assets/test.css" %}" />
     
-    {# <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}/grid.css" > #}
-    {# <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}/test.css" > #}
+    {# <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}grid.css" > #}
+    {# <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}test.css" > #}
     {# where does get_static_prefix come from??? #}
 
     {# <link rel="stylesheet" type="text/css" href="assets/grid.css" > #}
@@ -23,11 +22,9 @@
 <body>
     <div id="sidebar" class="grid_3 alpha">
 		{% block sidebar %}
-			{% block usrname %}
-	        <ul>
-	        	<li>default name
-	        </ul>
-	        {% endblock %}
+        <ul>
+        	<li>default name
+        </ul>
         {% endblock %}
     </div>
 

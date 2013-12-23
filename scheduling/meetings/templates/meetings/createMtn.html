@@ -1,7 +1,13 @@
 <form action="{% url 'meetings:create' %}" method="POST">
 {% csrf_token %}
-	<h2>Please type the name of your Meeting</h2>
+	<h2>Please type the name of your meeting</h2>
     <input type="textarea" name="meeting_name" />
+    <h2>Please type the username of those you would like to invite</h2>
+    <input type="textarea" name="invited_1" />
+    <input type="textarea" name="invited_2" />
+    <input type="textarea" name="invited_3" />
+    <input type="textarea" name="invited_4" />
+    <input type="textarea" name="invited_5" />
 	<br/>
 	<input type="submit" value="nextStep" />
 </form>
