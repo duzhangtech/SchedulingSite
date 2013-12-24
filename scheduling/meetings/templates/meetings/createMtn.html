@@ -183,7 +183,7 @@ $(document).mousemove( function(e) {
 
 $(document).mouseup( function(e) {
     $('#slot_'+counter+'').attr("id","slot_"+counter+"_finalize");
-//$("#col_2").before("<div>"+processData[1]+"</div>");
+ $("#col_2").before("<div>"+processData[1]+"</div>");
 });     
 
 //parse the selected begining time
@@ -225,7 +225,7 @@ $(document).mousemove( function(e) {
 
 };
   for(var cc=1; cc < counter+1;cc++){
-    processData[cc] = $("#dataCarrier_"+cc+"").html() + $("#dataCarrier_date_"+cc+"").html();
+    processData[cc] = $("#dataCarrier_"+cc+"").html().replace(/[^\d.]/g, "") + $("#dataCarrier_date_"+cc+"").html().replace(/[^\d.]/g, "");
   };
 });
 //parse the date
