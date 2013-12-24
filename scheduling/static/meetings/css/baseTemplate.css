@@ -1,0 +1,33 @@
+/*GLOBAL SETTINGS*/
+body{
+    background-color: #eeeeee;
+}
+ul{
+    list-style-type: none;
+}
+/*BASE TEMPLATE*/
+#topBar{
+    background-color: lightblue;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 7%;
+    width: 100%;
+    z-index: 99999;
+}
+#sideBar{
+    top: 6%;
+    background-color: #eeeeee;
+    position: relative;
+    width: 16.8%;
+    height: 100%;
+    float: left;
+}
+#content{
+    top: 6%;
+    width: 82.5%;
+    background-color: white;
+    position: relative;
+    height: 100%;
+    float: right;
+}

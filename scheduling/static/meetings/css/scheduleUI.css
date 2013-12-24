@@ -1,0 +1,134 @@
+/*disable selection in chrome*/
+*::selection{
+    background: transparent;
+}
+*::-moz-selection{
+    background: transparent;
+}
+*::-webkit-selection{
+    background: transparent;
+}
+#col_1
+{
+    left: 0%;
+
+}
+#col_2
+{
+    left: 14.785714%;
+}
+#col_3
+{
+    left: 29.571428%;
+
+}
+#col_4
+{
+    left: 44.357142%;
+
+}
+#col_5
+{
+    left: 59.142856%;
+
+}
+#col_6
+{
+    left: 73.928571%;
+
+}
+#col_7
+{
+    left: 88.714284%;
+}
+.calCol{
+    height: 100%;
+    width: 14%;  
+    z-index: 9000;  
+    background-color:  black;
+    position: absolute;
+    opacity: 0;
+}
+
+.avail_time{
+    position: absolute;
+    z-index: 10000;
+    opacity: 0.5;
+    background-color: lawngreen;
+    border-style: solid;
+    border-color: darkcyan;
+    border-width: 2px;
+    min-height: 2.63157895%;
+}
+#container{
+    width: 100%;   /* 1600 px*/
+    max-width: 100em;
+    height: 100%;
+    margin: auto;
+    font-size: 1em;
+    position: relative;
+}
+#scheduleUIwrapper{
+    position: absolute;
+    width:80%;
+    top: 35%;
+    height: 100%;
+}
+#dateWrapper{
+    position: absolute;
+    width: 100%;
+    left: 12%;
+    top: 0%;
+    font-size: 1em;
+}
+.dateSpacer{
+    position: absolute;
+}
+#dateSpacer_1{left: 0%;}
+#dateSpacer_2{left: 14.5%;}
+#dateSpacer_3{left: 29%;}
+#dateSpacer_4{left: 43.5%;}
+#dateSpacer_5{left: 58%;}
+#dateSpacer_6{left: 72.5%;}
+#dateSpacer_7{left: 87%;}
+
+#clockWrapper{
+    position: absolute;
+    top: 2%;  
+    left: 5%;
+}
+#clockTime{
+    margin-bottom: 83%;
+    text-align: right;
+}
+#CalWrapper{
+    top: 5%;
+    left: 10%;
+    position: absolute;
+    width: 100%;   /* 1600 px*/
+    max-width: 100em;
+    height: 62.5em;
+    margin: auto;
+    font-size: 1em;
+}
+.lines{
+    z-index: 500;
+    width: 100%;
+    height: 1px;
+    background-color: #eeeeee;
+    position: absolute;
+}
+.lines_row{
+    z-index: 501;
+    width: 1px;
+    height: 98%;
+    background-color: #eeeeee;
+    position: absolute;
+}
+.bold_lines{
+    z-index: 1000;
+    width: 100%;
+    height: 2px;
+    background-color: #dddddd;
+    position: absolute;
+}

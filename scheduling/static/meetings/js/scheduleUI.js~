@@ -1,0 +1,129 @@
+ <script type="text/javascript"> // visualize the Y grid
+  var num=2.439024;
+  for(var i=0; i<41; i++){  
+  var k = num * i;
+  $( "#col_1" ).before("<div class='lines' style='top:"+k+"%'></div>" );
+  }
+  </script>
+
+  <script type="text/javascript"> // visualize the X grid
+  var num_row=14.2857;
+  for(var i=0; i<8; i++){  
+  var k = num_row * i;
+  var exist=$("#lines_container").html();
+  $( "#lines_container" ).html(exist+"<div class='lines_row' style='left:"+k+"%'></div>" );
+  }
+  </script>
+
+  <script type="text/javascript"> // visualize the even o'clock Y grid
+  var num=2.439024;
+  for(var i=0; i<41; i=i+4){  
+  var k = num * i;
+  $( "#col_1" ).before("<div class='bold_lines' style='top:"+k+"%'></div>" );
+  }
+  </script>
+
+
+   <script type="text/javascript">
+//***********************************window-size********************************
+  var GLOBAL = {};
+  GLOBAL.userHeight=$(window).height();
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&7core&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    var CalTopY = -15;
+    var mouseY;
+    var initY;
+    var WIDTH = 13.6;
+    var counter=0;
+    var shortest_height = 2;
+    // for inelastic time_slot
+    var finalY;
+    var gridY = new Array(); 
+    var test;  
+    var initTopPosition; // carry the top position data from 1st funtion to 2nd
+  var left_mark = 0;
+  var initX = new Array();
+for(var i = 0; i < 41; i++){
+    gridY[i] = 2.439024 * i; // generate the horizontal grid on the div
+}
+//generate the left attributes of avail_time slots for each one
+for(var i=1; i <8;i++){
+  left_mark=14.285714*(i-1);
+  initX[i] = 0.4+left_mark*0.9999;
+};
+//Drag&Resize:
+var dragResize=function(){
+      $(".avail_time").draggable({ 
+          cursor: 'move',
+          axis: "y",
+          snap:'.lines',
+          snapTolerance: 30,
+          snapMode:'inner',
+          containment: '#container',
+      });
+
+      $(".avail_time").resizable({
+          snap:'.lines',
+          snapTolerance: 30,
+          handles: 's',
+          containment: '#container',        
+      });
+};
+//different slot generators for seven lanes
+var column_init = function(num){
+$("#col_"+num).mousedown( function(e) {
+   counter = counter+1;
+   initY = CalTopY+(e.pageY-8)/10;  // % conversion 
+   var nearestY= gridY[0];
+  for(var h=0;h<41;h++){
+      if(gridY[h+1]>initY){
+        nearestY = gridY[h];
+        break;
+      } 
+  }
+  nearestY=nearestY+0.5;
+//$('#col_1').after("<div style='position: absolute; left: 200px; font-size:5em;'>"+initY+"</div>");
+  initTopPosition = nearestY;
+   $('#col_'+num).after("<div class='avail_time' id='slot_"+counter+"' style='top: "+nearestY+"%; left:"+initX[num]+"%; position:absolute; width:"+WIDTH+"%; ' ></div>");
+//&&&&&&&&&&&&&&&&&&&&&&&&&bottom drag&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+   $("#slot_"+counter+"").html("<div class='avail_time_bottom' id='slot_"+counter+"_bottom' style='width:100%; position:absolute; background-color: red; height:5px; bottom: 0;' > </div>");
+   
+   dragResize();
+}); 
+};
+
+column_init(7);
+column_init(6);
+column_init(5);
+column_init(4);
+column_init(3);
+column_init(2);
+column_init(1);
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&xcontinue CORE&&&&&&&&&&&&&&7
+$(document).mousemove( function(e) {
+
+   mouseX = e.pageX; 
+   mouseY = CalTopY+(e.pageY-8)/10;   //  % conversion
+   //calculate the nearest benchmark
+   var nearestY_new= gridY[0];
+    for(var i=0;i<39;i++){
+        if(gridY[i]>mouseY){
+          nearestY_new = gridY[i];
+            break;
+        }   
+    }
+    //subtract the initial benchmark
+    nearestY_new = nearestY_new - initTopPosition;  
+// TEST--------------------$('#col_1').after("<div style='position: absolute; font-size:5em;'>"+nearestY+"</div>");
+   $('#slot_'+counter+'').css({"height":""+nearestY_new+"%"})
+});  
+
+
+
+$(document).mouseup( function(e) {
+    $('#slot_'+counter+'').attr("id","slot_"+counter+"_finalize");
+});     
+
+</script>

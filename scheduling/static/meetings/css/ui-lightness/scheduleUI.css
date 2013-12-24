@@ -1,0 +1,72 @@
+@left = 14.285714;
+#col_1
+{
+    left: 0%;
+
+}
+#col_2
+{
+    left: 14.285714%;
+    background-color: black;
+}
+#col_3
+{
+    left: (@left*2)%;
+
+}
+#col_4
+{
+    left:(@left*3)%;
+    background-color: black;
+
+}
+#col_5
+{
+    left: (@left*4)%;
+
+}
+#col_6
+{
+    left: (@left*5)%;
+    background-color: black;
+
+}
+#col_7
+{
+    left: (@left*6)%;
+}
+.calCol{
+    height: 100%;
+    width: 14%;    
+    background-color: white;
+    position: absolute;
+
+}
+
+.avail_time{
+    position: absolute;
+    z-index: 2000;
+}
+#container{
+    width: 100%;   /* 1600 px*/
+    max-width: 100em;
+    height: 62.5em;
+    margin: auto;
+    font-size: 1em;
+    position: relative;
+}
+.lines{
+    z-index: 500;
+    width: 100%;
+    height: 3px;
+    background-color: gray;
+    position: absolute;
+}
+.bold_lines{
+    z-index: 1000;
+    width: 100%;
+    height: 4px;
+    background-color: black;
+    position: absolute;
+}
+}

@@ -1,15 +1,50 @@
-from django.shortcuts import render, get_object_or_404
+#Stdlib imports
+import string
+import random
+from datetime import date
+
+from django.shortcuts import render, get_object_or_404, render_to_response
 from django.utils import timezone
 from django.contrib.auth.models import User
 #from django.core.urlresolvers import reverse
 from django.http import HttpResponse#, HttpResponseRedirect
 from meetings.models import Meeting
 
+def giveDate(num):
+    if num == 0: return 'Sunday'
+    if num == 1: return 'Monday'
+    if num == 2: return 'Tuesday'
+    if num == 3: return 'Wednesday'
+    if num == 4: return 'Thursday'
+    if num == 5: return 'Friday'
+    if num == 6: return 'Saturday'
+# Define the date row
+today_date = date.today().weekday()
+global display
+display = [giveDate(today_date),\
+    giveDate((today_date+1)%7),\
+    giveDate((today_date+2)%7),\
+    giveDate((today_date+3)%7),\
+    giveDate((today_date+4)%7),\
+    giveDate((today_date+5)%7),\
+    giveDate((today_date+6)%7)]
+#Define the clock col
+clock = []
+for num in range(0,11):
+    k = (num*2 + 5);
+    if k > 12:
+        clock.append(str(k%12)+"pm");
+    elif k < 12 :
+        clock.append(str(k%12)+"am");
+#6-digit random id generator
+def index_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for x in range(size))
+
 def createMtn (request):
-	return render(request, 'meetings/createMtn.html')
+	return render_to_response("meetings/createMtn.html", {'clock': clock,'date': display, })
 
 def create(request):
-	new_meeting_object = Meeting(name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
+	new_meeting_object = Meeting(description=request.POST['meeting_description'] ,name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
 	new_meeting_object.save()
 	for i in range(1, 6):
 		form_in = request.POST['invited_' + str(i)]
