@@ -1,7 +1,7 @@
 #Stdlib imports
 import string
 import random
-from datetime import date
+from datetime import date, timedelta
 
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.utils import timezone
@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 #from django.core.urlresolvers import reverse
 from django.http import HttpResponse#, HttpResponseRedirect
 from meetings.models import Meeting
-
+# Define the date row
 def giveDate(num):
     if num == 0: return 'Sunday'
     if num == 1: return 'Monday'
@@ -18,7 +18,6 @@ def giveDate(num):
     if num == 4: return 'Thursday'
     if num == 5: return 'Friday'
     if num == 6: return 'Saturday'
-# Define the date row
 today_date = date.today().weekday()
 global display
 display = [giveDate(today_date),\
@@ -28,6 +27,16 @@ display = [giveDate(today_date),\
     giveDate((today_date+4)%7),\
     giveDate((today_date+5)%7),\
     giveDate((today_date+6)%7)]
+#Define the data processing needs
+global datesForData
+datesForData = [date.today(), \
+                date.today()+timedelta(days = 1),\
+                date.today()+timedelta(days = 2),\
+                date.today()+timedelta(days = 3),\
+                date.today()+timedelta(days = 4),\
+                date.today()+timedelta(days = 5),\
+                date.today()+timedelta(days = 6)]
+
 #Define the clock col
 clock = []
 for num in range(0,11):
@@ -41,7 +50,7 @@ def index_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 
 def createMtn (request):
-	return render_to_response("meetings/createMtn.html", {'clock': clock,'date': display, })
+	return render_to_response("meetings/createMtn.html", {'clock': clock,'date': display, 'datesForData': datesForData, })
 
 def create(request):
 	new_meeting_object = Meeting(description=request.POST['meeting_description'] ,name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)

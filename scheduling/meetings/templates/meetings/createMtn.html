@@ -30,6 +30,9 @@
 {% for day in date %}
 <h3 class="dateSpacer" id="dateSpacer_{{forloop.counter}}">{{ day }}</h3>
 {% endfor %}<!--header-->
+{% for day in datesForData %}
+<h3 style="display:none;" id="datesForData_{{forloop.counter}}">{{ day|date:"SHORT_DATE_FORMAT" }}</h3>
+{% endfor %}<!--header-->
 </div><!--end of dateWrapper-->
 
 <div id="clockWrapper">
@@ -51,6 +54,8 @@
     <input type="textarea" name="invited_3" />
     <input type="textarea" name="invited_4" />
     <input type="textarea" name="invited_5" />
+
+<!---->
 	<br/>
 	<input type="submit" value="nextStep" />
 </form>
@@ -94,6 +99,9 @@
     var gridY = new Array(); 
     var test;  
     var initTopPosition; // carry the top position data from 1st funtion to 2nd
+    var message; // carry the message
+    var messageTime;
+    var messageDate;
   var left_mark = 0;
   var initX = new Array();
 for(var i = 0; i < 41; i++){
@@ -134,13 +142,12 @@ $("#col_"+num).mousedown( function(e) {
         break;
       } 
   }
-  nearestY=nearestY+0.5;
+  messageDate = $("#datesForData_"+num).html();
 //$('#col_1').after("<div style='position: absolute; left: 200px; font-size:5em;'>"+initY+"</div>");
   initTopPosition = nearestY;
    $('#col_'+num).after("<div class='avail_time' id='slot_"+counter+"' style='top: "+nearestY+"%; left:"+initX[num]+"%; position:absolute; width:"+WIDTH+"%; ' ></div>");
-//&&&&&&&&&&&&&&&&&&&&&&&&&bottom drag&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
-   $("#slot_"+counter+"").html("<div class='avail_time_bottom' id='slot_"+counter+"_bottom' style='width:100%; position:absolute; background-color: red; height:5px; bottom: 0;' > </div>");
+   $("#slot_"+counter+"").html("<div style='display: none;'id='dataCarrier_date_"+counter+"'>"+messageDate+"</div><div id='dataCarrier_"+counter+"'></div><div class='avail_time_bottom' id='slot_"+counter+"_bottom' style='width:100%; position:absolute; background-color: red; height:5px; bottom: 0;' ></div>");
    
    dragResize();
 }); 
@@ -176,7 +183,55 @@ $(document).mousemove( function(e) {
 
 $(document).mouseup( function(e) {
     $('#slot_'+counter+'').attr("id","slot_"+counter+"_finalize");
+//$("#col_2").before("<div>"+processData[1]+"</div>");
 });     
+
+//parse the selected begining time
+var processMessageTime = function(messageTime){
+if(messageTime <10){
+  if(messageTime%2 === 0 ){
+    messageTime = (messageTime/2) + 5;
+    messageTime = "0" + messageTime + ":00";
+  }
+  else{
+    messageTime = ((messageTime-1)/2) +5
+    messageTime = "0" + messageTime + ":30"
+  }
+}
+else {
+  if(messageTime%2 === 0 ){
+    messageTime = (messageTime/2) + 5;
+    messageTime = messageTime + ":00";
+  }
+  else{
+    messageTime = ((messageTime-1)/2) +5
+    messageTime = messageTime + ":30"
+  }
+}
+return messageTime;
+}
+
+var containerHeight = $("#container").height();
+var processData = new Array();
+
+$(document).mousemove( function(e) {
+  for(var w=1; w < counter+1;w++){
+    var topForData = parseInt($("#slot_"+w+"_finalize").css("top"));
+    var bottomForData = $("#slot_"+w+"_finalize").height();
+    bottomForData = processMessageTime(Math.round(((bottomForData + topForData)/containerHeight)/0.024378));
+    topForData = processMessageTime(Math.round((topForData/containerHeight)/0.024378));
+    $("#dataCarrier_"+w+"").html(""+topForData+"-"+bottomForData+"");
+
+
+};
+  for(var cc=1; cc < counter+1;cc++){
+    processData[cc] = $("#dataCarrier_"+cc+"").html() + $("#dataCarrier_date_"+cc+"").html();
+  };
+});
+//parse the date
+
+
+//merge the messages
 
 </script>
 
