@@ -1,17 +1,30 @@
-{%extends "dashboard.html"%}
+{%extends "loggedin.html"%}
 
 <body>
-{% block sidebar %}
-    <ul>
-    	<li>{{full_name}} {# is there a way to let the generic template access this full name?#}
-    	<li><a href="/logout/">logout</a>
-    	<li><a href="{% url 'loggedin' %}createMtn/">organize new meeting</a>
-    	<li><a href="{% url 'loggedin' %}organized/">meetings you organized</a>
-    	<li><a href="{% url 'loggedin' %}invited/">meetings you are invited to</a>
-    </ul>
-{% endblock %}
 
 {% block content%}
+<div id = "formWrapper">
+<form action="{% url 'meetings:create' %}" method="POST">
+    <div id="formLocator1">
+    <h3>Please type the name of your meeting</h3>
+    <input type="textarea" name="meeting_name" />
+    </div>
+    <div id="formLocator2">
+    <h3>description</h3>
+    <input id="formDescription" type="textarea" name="meeting_description" />
+    </div>
+    <h3>Please type the username of those you would like to invite</h3>
+    <input type="textarea" name="invited_1" />
+    <input type="textarea" name="invited_2" />
+    <input type="textarea" name="invited_3" />
+    <input type="textarea" name="invited_4" />
+    <input type="textarea" name="invited_5" />
+    <input type="hidden" value="" id="dataStorage"name= "proposed">
+{% csrf_token %}
+<!---->
+  <input type="submit" class="submit" value="nextStep" id="submit"/>
+</form>
+</div> <!--the end of formWrapper-->
 <div id="scheduleUIwrapper">
   <div id="CalWrapper">
   <div id="container">
@@ -31,7 +44,7 @@
 <h3 class="dateSpacer" id="dateSpacer_{{forloop.counter}}">{{ day }}</h3>
 {% endfor %}<!--header-->
 {% for day in datesForData %}
-<h3 style="display:none;" id="datesForData_{{forloop.counter}}">{{ day|date:"SHORT_DATE_FORMAT" }}</h3>
+<h3 class="datesForData" id="datesForData_{{forloop.counter}}">{{ day|date:"SHORT_DATE_FORMAT" }}</h3>
 {% endfor %}<!--header-->
 </div><!--end of dateWrapper-->
 
@@ -43,28 +56,7 @@
 </div><!--end of scheduleUIWrapper-->
 
 
-<div id = "formWrapper">
-<form action="{% url 'meetings:create' %}" method="POST">
-    <div id="formLocator1">
-	  <h3>Please type the name of your meeting</h3>
-    <input type="textarea" name="meeting_name" />
-    </div>
-    <div id="formLocator2">
-    <h3>description</h3>
-    <input id="formDescription" type="textarea" name="meeting_description" />
-    </div>
-    <h3>Please type the username of those you would like to invite</h3>
-    <input type="textarea" name="invited_1" />
-    <input type="textarea" name="invited_2" />
-    <input type="textarea" name="invited_3" />
-    <input type="textarea" name="invited_4" />
-    <input type="textarea" name="invited_5" />
-    <input type="hidden" value="" id="dataStorage"name= "proposed">
-{% csrf_token %}
-<!---->
-	<input type="submit" class="submit" value="nextStep" id="submit"/>
-</form>
-</div> <!--the end of formWrapper-->
+
 <!--JQEURY************************************************************************
 **********************************************************************************-->
   <script type="text/javascript"> // visualize the Y grid

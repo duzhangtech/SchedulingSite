@@ -23,7 +23,9 @@ def auth_view(request):
 
 @login_required(login_url="/")
 def loggedin(request):
-	return render_to_response('loggedin.html', {'full_name': request.user.username})
+	organized_list = request.user.meetings_organized.all()
+	invited_list = request.user.meetings_invited.all()
+	return render_to_response('loggedin.html', {'user': request.user, 'list_organized': organized_list, 'list_invited': invited_list,})
 
 def invalid_login(request):
 	c = {}

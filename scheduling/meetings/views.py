@@ -20,6 +20,14 @@ def giveDate(num):
     if num == 5: return 'Friday'
     if num == 6: return 'Saturday'
 today_date = date.today().weekday()
+global datesForData #Define the data processing needs
+datesForData = [date.today(), \
+                date.today()+timedelta(days = 1),\
+                date.today()+timedelta(days = 2),\
+                date.today()+timedelta(days = 3),\
+                date.today()+timedelta(days = 4),\
+                date.today()+timedelta(days = 5),\
+                date.today()+timedelta(days = 6)]
 global display
 display = [giveDate(today_date),\
     giveDate((today_date+1)%7),\
@@ -28,16 +36,6 @@ display = [giveDate(today_date),\
     giveDate((today_date+4)%7),\
     giveDate((today_date+5)%7),\
     giveDate((today_date+6)%7)]
-#Define the data processing needs
-global datesForData
-datesForData = [date.today(), \
-                date.today()+timedelta(days = 1),\
-                date.today()+timedelta(days = 2),\
-                date.today()+timedelta(days = 3),\
-                date.today()+timedelta(days = 4),\
-                date.today()+timedelta(days = 5),\
-                date.today()+timedelta(days = 6)]
-
 #Define the clock col
 clock = []
 for num in range(0,11):
@@ -51,7 +49,7 @@ def index_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 
 def createMtn (request):
-	return render_to_response("meetings/createMtn.html", {'clock': clock,'date': display, 'datesForData': datesForData, })
+	return render_to_response("meetings/createMtn.html", {'user': request.user,'clock': clock,'date': display, 'datesForData': datesForData, })
 
 def create(request):
     new_meeting_object = Meeting(description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
