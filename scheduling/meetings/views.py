@@ -3,6 +3,7 @@ import string
 import random
 from datetime import date, timedelta
 
+from django.core.context_processors import csrf
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -53,15 +54,19 @@ def createMtn (request):
 	return render_to_response("meetings/createMtn.html", {'clock': clock,'date': display, 'datesForData': datesForData, })
 
 def create(request):
-	new_meeting_object = Meeting(description=request.POST['meeting_description'] ,name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
-	new_meeting_object.save()
-	for i in range(1, 6):
+    new_meeting_object = Meeting(description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
+    new_meeting_object.save()
+    for i in range(1, 6):
 		form_in = request.POST['invited_' + str(i)]
 		if form_in != '':
 			u = User.objects.get(username=form_in)
 			new_meeting_object.invited.add(u)
 			new_meeting_object.save()
-	return render(request, 'meetings/meeting_creation_success.html', {'name': new_meeting_object.name})
+    
+    c = {}
+    c.update(csrf(request))
+    c['name']=new_meeting_object.name
+    return render_to_response('meetings/meeting_creation_success.html', c)
 
 def organized(request):
 	# meeting_list = Meeting.objects.filter(organizer=request.user)

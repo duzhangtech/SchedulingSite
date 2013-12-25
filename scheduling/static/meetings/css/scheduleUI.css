@@ -71,7 +71,7 @@
 #scheduleUIwrapper{
     position: absolute;
     width:80%;
-    top: 35%;
+    top: 25%;
     height: 100%;
 }
 #dateWrapper{
@@ -92,6 +92,11 @@
 #dateSpacer_6{left: 72.5%;}
 #dateSpacer_7{left: 87%;}
 
+.dataCarrier{
+    position: relative;
+    margin-left: 15%;
+    margin-top: 5%;
+}
 #clockWrapper{
     position: absolute;
     top: 2%;  
@@ -104,12 +109,37 @@
 #CalWrapper{
     top: 5%;
     left: 10%;
-    position: absolute;
+    position: relative;
     width: 100%;   /* 1600 px*/
     max-width: 100em;
     height: 62.5em;
     margin: auto;
     font-size: 1em;
+}
+#formLocator1{
+    position: absolute;
+    width: 50%;
+    top: -40%;
+}
+#formLocator1:first-child{
+    width: 130%;
+}
+#formLocator2{
+    position: absolute;
+    width: 50%;
+    top: -40%;
+    left: 40%;
+}
+#formDescription{
+    width: 100%;
+}
+#formWrapper{
+    position: absolute;
+    min-height: 20%;
+    width: 100%;
+    font-size:1em;
+    left: 4%;
+    bottom: 69%;
 }
 .lines{
     z-index: 500;

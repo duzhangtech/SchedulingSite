@@ -5,6 +5,15 @@ body{
 ul{
     list-style-type: none;
 }
+input{
+    width: 16%;
+    height: 25px;
+    z-index: 199999;
+    font-size: 12px;
+}
+.submit{
+    width: 10%;
+}
 /*BASE TEMPLATE*/
 #topBar{
     background-color: lightblue;

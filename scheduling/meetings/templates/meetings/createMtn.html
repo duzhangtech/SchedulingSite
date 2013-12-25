@@ -42,24 +42,29 @@
 </div><!--end of clockWrapper-->
 </div><!--end of scheduleUIWrapper-->
 
+
+<div id = "formWrapper">
 <form action="{% url 'meetings:create' %}" method="POST">
-{% csrf_token %}
-	  <h2>Please type the name of your meeting</h2>
+    <div id="formLocator1">
+	  <h3>Please type the name of your meeting</h3>
     <input type="textarea" name="meeting_name" />
-    <h2>description</h2>
-    <input type="textarea" name="meeting_description" />
-    <h2>Please type the username of those you would like to invite</h2>
+    </div>
+    <div id="formLocator2">
+    <h3>description</h3>
+    <input id="formDescription" type="textarea" name="meeting_description" />
+    </div>
+    <h3>Please type the username of those you would like to invite</h3>
     <input type="textarea" name="invited_1" />
     <input type="textarea" name="invited_2" />
     <input type="textarea" name="invited_3" />
     <input type="textarea" name="invited_4" />
     <input type="textarea" name="invited_5" />
-
+    <input type="hidden" value="" id="dataStorage"name= "proposed">
+{% csrf_token %}
 <!---->
-	<br/>
-	<input type="submit" value="nextStep" />
+	<input type="submit" class="submit" value="nextStep" id="submit"/>
 </form>
-
+</div> <!--the end of formWrapper-->
 <!--JQEURY************************************************************************
 **********************************************************************************-->
   <script type="text/javascript"> // visualize the Y grid
@@ -88,7 +93,7 @@
   GLOBAL.userHeight=$(window).height();
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&7core&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-    var CalTopY = -45;
+    var CalTopY = -GLOBAL.userHeight/28;
     var mouseY;
     var initY;
     var WIDTH = 13.6;
@@ -147,7 +152,7 @@ $("#col_"+num).mousedown( function(e) {
   initTopPosition = nearestY;
    $('#col_'+num).after("<div class='avail_time' id='slot_"+counter+"' style='top: "+nearestY+"%; left:"+initX[num]+"%; position:absolute; width:"+WIDTH+"%; ' ></div>");
 
-   $("#slot_"+counter+"").html("<div style='display: none;'id='dataCarrier_date_"+counter+"'>"+messageDate+"</div><div id='dataCarrier_"+counter+"'></div><div class='avail_time_bottom' id='slot_"+counter+"_bottom' style='width:100%; position:absolute; background-color: red; height:5px; bottom: 0;' ></div>");
+   $("#slot_"+counter+"").html("<div style='display: none;'id='dataCarrier_date_"+counter+"'>"+messageDate+"</div><div style='display:none;'class='dataCarrier' id='dataCarrier_"+counter+"'></div><div class='avail_time_bottom' id='slot_"+counter+"_bottom' style='width:100%; position:absolute; background-color: red; height:5px; bottom: 0;' ></div>");
    
    dragResize();
 }); 
@@ -183,7 +188,8 @@ $(document).mousemove( function(e) {
 
 $(document).mouseup( function(e) {
     $('#slot_'+counter+'').attr("id","slot_"+counter+"_finalize");
- $("#col_2").before("<div>"+processData[1]+"</div>");
+//$("#col_2").before("<div>"+processData[1]+"</div>");
+    $('#dataCarrier_'+counter+'').css("display","");
 });     
 
 //parse the selected begining time
@@ -208,6 +214,13 @@ else {
     messageTime = messageTime + ":30"
   }
 }
+
+if(messageTime === "24:00"){
+  messageTime = "0:00";};
+if(messageTime === "24:30"){
+  messageTime = "0:30";};
+if(messageTime === "25:00"){
+  messageTime = "1:00"};
 return messageTime;
 }
 
@@ -227,6 +240,13 @@ $(document).mousemove( function(e) {
   for(var cc=1; cc < counter+1;cc++){
     processData[cc] = $("#dataCarrier_"+cc+"").html().replace(/[^\d.]/g, "") + $("#dataCarrier_date_"+cc+"").html().replace(/[^\d.]/g, "");
   };
+});
+var proposed = "";
+$("#submit").click(function(e){
+   for(var cc=1; cc < counter+1;cc++){
+    proposed = proposed + processData[cc];
+  }; 
+  $("#dataStorage").val(proposed);
 });
 //parse the date
 
