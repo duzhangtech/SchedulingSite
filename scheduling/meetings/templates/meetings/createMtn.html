@@ -4,7 +4,7 @@
 
 {% block content%}
 <div id = "formWrapper">
-<form action="{% url 'meetings:create' %}" method="POST">
+<form action="{% url 'meetings:create' %}" method="POST">{% csrf_token %}
     <div id="formLocator1">
     <h3>Please type the name of your meeting</h3>
     <input type="textarea" name="meeting_name" />
@@ -20,7 +20,6 @@
     <input type="textarea" name="invited_4" />
     <input type="textarea" name="invited_5" />
     <input type="hidden" value="" id="dataStorage"name= "proposed">
-{% csrf_token %}
 <!---->
   <input type="submit" class="submit" value="nextStep" id="submit"/>
 </form>

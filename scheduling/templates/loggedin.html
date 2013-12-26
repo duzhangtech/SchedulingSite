@@ -2,9 +2,7 @@
 
 {% block sidebar %}
     <ul>
-    	<li>{{user}} {# is there a way to let the generic template access this full name?#}
-    	<li><a href="/logout/">logout</a>
-    	<li><a href="{% url 'loggedin' %}createMtn/">organize new meeting</a>
+    	<li><a href="/loggedin/">{{user}}</a> {# is there a way to let the generic template access this full name?#}
     	<li><a id="sideBarOrganized" href="">meetings you organized</a>
 {% if list_organized %} 
 	{% for meeting in list_organized %}
@@ -21,5 +19,7 @@
 {% else %}
 	<p>No meeting is available.</p>
 {% endif %}
+    	<li><a href="/logout/">logout</a>
+    	<li><a href="{% url 'loggedin' %}createMtn/">organize new meeting</a>
     </ul>
 {% endblock %}

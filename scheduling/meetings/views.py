@@ -49,7 +49,15 @@ def index_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 
 def createMtn (request):
-	return render_to_response("meetings/createMtn.html", {'user': request.user,'clock': clock,'date': display, 'datesForData': datesForData, })
+    a = {}
+    a.update(csrf(request))
+    a['user'] = request.user
+    a['clock'] = clock
+    a['date'] = display
+    a['datesForData'] = datesForData
+    a['list_organized'] = request.user.meetings_organized.all()
+    a['list_invited'] = request.user.meetings_invited.all()
+    return render_to_response("meetings/createMtn.html", a)
 
 def create(request):
     new_meeting_object = Meeting(description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
@@ -60,11 +68,7 @@ def create(request):
 			u = User.objects.get(username=form_in)
 			new_meeting_object.invited.add(u)
 			new_meeting_object.save()
-    
-    c = {}
-    c.update(csrf(request))
-    c['name']=new_meeting_object.name
-    return render_to_response('meetings/meeting_creation_success.html', c)
+    return render_to_response('meetings/meeting_creation_success.html', {'name':new_meeting_object.name,})
 
 def organized(request):
 	# meeting_list = Meeting.objects.filter(organizer=request.user)
