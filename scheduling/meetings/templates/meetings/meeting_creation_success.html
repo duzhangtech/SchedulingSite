@@ -1,3 +1,7 @@
+{%extends "loggedin.html" %}
+
+{%block content%}
 <h1>You have successfully created a meeting</h1>
 <h2>{{name}}</h2>
 <a href="{% url 'loggedin' %}">go home</a>
+{%endblock%}

@@ -48,6 +48,11 @@ for num in range(0,11):
 def index_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 
+a ={}
+a['clock'] = clock
+a['date'] = display
+a['datesForData'] = datesForData
+
 def createMtn (request):
     a = {}
     a.update(csrf(request))
@@ -60,7 +65,7 @@ def createMtn (request):
     return render_to_response("meetings/createMtn.html", a)
 
 def create(request):
-    new_meeting_object = Meeting(description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
+    new_meeting_object = Meeting(meeting_id=index_generator(), description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
     new_meeting_object.save()
     for i in range(1, 6):
 		form_in = request.POST['invited_' + str(i)]
@@ -68,13 +73,29 @@ def create(request):
 			u = User.objects.get(username=form_in)
 			new_meeting_object.invited.add(u)
 			new_meeting_object.save()
-    return render_to_response('meetings/meeting_creation_success.html', {'name':new_meeting_object.name,})
+    b = a
+    b['user'] = request.user
+    b['list_organized'] = request.user.meetings_organized.all()
+    b['list_invited'] = request.user.meetings_invited.all()  
+    b['name'] = new_meeting_object.name
+    return render_to_response('meetings/meeting_creation_success.html', b)
 
-def organized(request):
-	# meeting_list = Meeting.objects.filter(organizer=request.user)
-	meeting_list = request.user.meetings_organized.all()
-	return render(request, 'meetings/organized.html', {'list': meeting_list})
 
-def invited(request):
-	invited_list = request.user.meetings_invited.all()
-	return render(request, 'meetings/invited.html', {'list':invited_list})
+
+def MtnOrganized(request, meeting_id):
+    meeting = Meeting.objects.get(meeting_id = meeting_id)
+    b = a
+    b['meeting'] = meeting
+    b['user'] = request.user
+    b['list_organized'] = request.user.meetings_organized.all()
+    b['list_invited'] = request.user.meetings_invited.all()     
+    return render_to_response('meetings/meeting_organized.html', b)
+
+def MtnInvited(request, meeting_id):
+    meeting = Meeting.objects.get(meeting_id = meeting_id)
+    b = a
+    b['meeting'] = meeting
+    b['user'] = request.user
+    b['list_organized'] = request.user.meetings_organized.all()
+    b['list_invited'] = request.user.meetings_invited.all()     
+    return render_to_response('meetings/meeting_invited.html', b)

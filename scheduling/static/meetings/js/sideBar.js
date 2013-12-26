@@ -1,10 +1,8 @@
 $(document).ready(function(e){
 	$('#sideBarOrganized').click(function(){
-		$('.invitedMeetingList').fade('slow');
-		$('.organizedMeetingList').css("display","");		
+		$('this').css('display','none');	
 	});
 	$('#sideBarInvited').click(function(){
-		$('.organizedMeetingList').fade("slow");	
-		$('.invitedMeetingList').css('display',"");
+		$('.organizedMeetingList').css('display','none');
 	});
 });
