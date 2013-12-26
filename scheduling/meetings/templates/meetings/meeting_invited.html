@@ -2,6 +2,116 @@
 
 {% block content%}
   <h1>{{meeting.name}}</h1>
-  <h3>organized by {{}}</h3>
+  <h3>organized by {{meeting.organizer}}</h3>
   <h4>{{meeting.pub_date}}</h4>
+  <h5>{{meeting.proposed}}</h5>
+  {%for num in data%}
+ 	<div style="display:none;"id="data_{{forloop.counter}}">{{num}}</div>
+  {%endfor%}
+  {%for num in specificTimeDispaly%}
+ 	<div style="display:none;"id="specific_{{forloop.counter}}">{{num}}</div>
+  {%endfor%}
+  <div style="display:none;"id="lengthStorage">{{length}}</div>
+  <div id="scheduleUIwrapper">
+  <div id="CalWrapper">
+  <div id="container">
+  <div id="lines_container"></div>
+  <div id="col_1" class="calCol"></div>
+  <div id="col_2" class="calCol"></div>
+  <div id="col_3" class="calCol"></div>
+  <div id="col_4" class="calCol"></div>
+  <div id="col_5" class="calCol"></div>
+  <div id="col_6" class="calCol"></div>
+  <div id="col_7" class="calCol"></div>
+  </div>
+  </div><!--end of CalWrapper-->
+
+<div id="dateWrapper">
+{% for day in date %}
+<h3 class="dateSpacer" id="dateSpacer_{{forloop.counter}}">{{ day }}</h3>
+{% endfor %}<!--header-->
+{% for day in datesForData %}
+<h3 class="datesForData" id="datesForData_{{forloop.counter}}">{{ day|date:"SHORT_DATE_FORMAT" }}</h3>
+{% endfor %}<!--header-->
+</div><!--end of dateWrapper-->
+
+<div id="clockWrapper">
+{% for time in clock %}
+ <h3 id ="clockTime">{{ time }}</h3><br/> 
+{% endfor %}
+</div><!--end of clockWrapper-->
+</div><!--end of scheduleUIWrapper-->
+
+
+<!--JQEURY************************************************************************
+**********************************************************************************-->
+  <script type="text/javascript"> // visualize the Y grid
+  var num=2.439024;
+  for(var i=0; i<41; i++){  
+  var k = num * i;
+  $( "#col_1" ).before("<div class='lines' style='top:"+k+"%'></div>" );
+  }
+ // visualize the X grid
+  var num_row=14.2857;
+  for(var i=0; i<8; i++){  
+  var k = num_row * i;
+  var exist=$("#lines_container").html();
+  $( "#lines_container" ).html(exist+"<div class='lines_row' style='left:"+k+"%'></div>" );
+  }
+
+  // visualize the even o'clock Y grid
+  var num=2.439024;
+  for(var i=0; i<41; i=i+4){  
+  var k = num * i;
+  $( "#col_1" ).before("<div class='bold_lines' style='top:"+k+"%'></div>" );
+  }
+
+//***********************************window-size********************************
+  var GLOBAL = {};
+  GLOBAL.userHeight=$(window).height();
+
+//&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&7core&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    var CalTopY = -GLOBAL.userHeight/28;
+    var mouseY;
+    var initY;
+    var WIDTH = 13.6;
+    var counter=0;
+    var shortest_height = 2;
+    // for inelastic time_slot
+    var finalY;
+    var gridY = new Array(); 
+    var test;  
+    var initTopPosition; // carry the top position data from 1st funtion to 2nd
+    var message; // carry the message
+    var messageTime;
+    var messageDate;
+  var left_mark = 0;
+  var initX = new Array();
+for(var i = 0; i < 41; i++){
+    gridY[i] = 2.439024 * i; // generate the horizontal grid on the div
+}
+
+//generate the left attributes of avail_time slots for each one
+for(var i=1; i <8;i++){
+  left_mark=14.285714*(i-1);
+  initX[i] = 0.4+left_mark*0.9999;
+};
+var data = new Array();
+var specific = new Array();
+var length = parseInt($("#lengthStorage").html());
+for(var ee =0; ee<length;ee++){
+	data[0+3*ee] = $("#data_"+(1+3*ee)+"").html();
+	data[1+3*ee] = $("#data_"+(2+3*ee)+"").html();
+	data[1+3*ee] = parseInt(data[1+3*ee]) - parseInt(data[0+3*ee]);
+	data[2+3*ee] = $("#data_"+(3+3*ee)+"").html();
+
+	specific[0+3*ee] = $("#specific_"+(1+3*ee)+"").html();
+	specific[1+3*ee] = $("#specific_"+(2+3*ee)+"").html();
+	specific[2+3*ee] = $("#specific_"+(3+3*ee)+"").html();
+	var k = ee*3;
+$("#container").after("<div class='avail_time' id='avail_"+ee+"' style='height:"+data[1+3*ee]*2.439024+"%; top: "+gridY[data[0+3*ee]]+"%; left:"+initX[data[2+3*ee]]+"%; position:absolute; width:"+WIDTH+"%; '></div>");
+
+$('#avail_'+ee+'').html("<div class='dataCarrier' id='dataDisplayer_"+ee+"'>"+specific[k+0]+specific[k+1]+specific[k+2]+"</div>");
+};
+</script>
 {%endblock%}

@@ -44,6 +44,46 @@ for num in range(0,11):
         clock.append(str(k%12)+"pm");
     elif k < 12 :
         clock.append(str(k%12)+"am");
+#data processing
+def singleProcessor(string):
+    if string[0] == '0':
+        if string[2] == '3':
+            k = 1
+        else: 
+            k = 0
+        k = k + 2*(int(string[1]) - 5)
+    else:
+        if string[2] == '3':
+            k = 1
+        else: 
+            k = 0
+        k = k + 2*(int(string[0:2]) - 5)
+
+    return k
+
+def processor(proposed):
+    tempStorage = []
+    num = len(proposed)/16
+    today = str(date.today())
+    today = today[5:] + "-"+today[0:4]
+    for i in range(0,num):
+        p = singleProcessor(proposed[16*i:16*(i+1)-12])
+        n = singleProcessor(proposed[16*(i+1)-12:16*(i+1)-8])
+        tempStorage.append(p)
+        tempStorage.append(n)
+        w = 1 + int(proposed[16*i+10:16*i+12]) - int(today[3:5])
+        tempStorage.append(w)
+    
+    return tempStorage
+
+def descriptionProcessor(proposed):
+    tempStorage = []
+    num = len(proposed)/16
+    for i in range(0,num):
+        tempStorage.append(proposed[0+i*16:2+i*16]+":"+proposed[2+i*16:4+i*16])
+        tempStorage.append('-')
+        tempStorage.append(proposed[4+i*16:6+i*16]+":"+proposed[6+i*16:8+i*16])
+    return tempStorage
 #6-digit random id generator
 def index_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
@@ -80,15 +120,14 @@ def create(request):
     b['name'] = new_meeting_object.name
     return render_to_response('meetings/meeting_creation_success.html', b)
 
-
-
 def MtnOrganized(request, meeting_id):
     meeting = Meeting.objects.get(meeting_id = meeting_id)
     b = a
     b['meeting'] = meeting
     b['user'] = request.user
     b['list_organized'] = request.user.meetings_organized.all()
-    b['list_invited'] = request.user.meetings_invited.all()     
+    b['list_invited'] = request.user.meetings_invited.all()
+    b['data'] = processor(meeting.proposed)     
     return render_to_response('meetings/meeting_organized.html', b)
 
 def MtnInvited(request, meeting_id):
@@ -98,4 +137,7 @@ def MtnInvited(request, meeting_id):
     b['user'] = request.user
     b['list_organized'] = request.user.meetings_organized.all()
     b['list_invited'] = request.user.meetings_invited.all()     
+    b['data'] = processor(meeting.proposed)  
+    b['length'] = len(b['data'])/3
+    b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
     return render_to_response('meetings/meeting_invited.html', b)
