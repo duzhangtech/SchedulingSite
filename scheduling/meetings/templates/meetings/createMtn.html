@@ -25,7 +25,14 @@
 </form>
 </div> <!--the end of formWrapper-->
 <div id="scheduleUIwrapper">
+<div id='scrollWindow'>
+ 
   <div id="CalWrapper">
+ <div id="clockWrapper">
+  {% for time in clock %}
+  <h3 id ="clockTime">{{ time }}</h3><br/> 
+  {% endfor %}
+  </div><!--end of clockWrapper-->
   <div id="container">
   <div id="lines_container"></div>
   <div id="col_1" class="calCol"></div>
@@ -37,7 +44,7 @@
   <div id="col_7" class="calCol"></div>
   </div>
   </div><!--end of CalWrapper-->
-
+</div>
 <div id="dateWrapper">
 {% for day in date %}
 <h3 class="dateSpacer" id="dateSpacer_{{forloop.counter}}">{{ day }}</h3>
@@ -47,11 +54,7 @@
 {% endfor %}<!--header-->
 </div><!--end of dateWrapper-->
 
-<div id="clockWrapper">
-{% for time in clock %}
- <h3 id ="clockTime">{{ time }}</h3><br/> 
-{% endfor %}
-</div><!--end of clockWrapper-->
+
 </div><!--end of scheduleUIWrapper-->
 
 

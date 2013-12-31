@@ -75,8 +75,8 @@
     min-height: 2.63157895%;
 }
 #container{
-    width: 100%;   /* 1600 px*/
-    max-width: 100em;
+    width: 100%;   /* 2000 px*/
+    max-width: 125em;
     height: 100%;
     margin: auto;
     font-size: 1em;
@@ -130,23 +130,31 @@
     margin-left: 0.85em;
     z-index: 99999;
 }
+#scrollWindow{
+    position: relative;
+    left:5%;
+    top: 7%;
+    width: 110%;
+    height:60%;
+    overflow: auto;
+}
 #clockWrapper{
     position: absolute;
-    top: 2%;  
-    left: 5%;
+    top:-2.5%;
+    left:-6%;
 }
 #clockTime{
     margin-bottom: 83%;
     text-align: right;
 }
 #CalWrapper{
-    top: 5%;
-    left: 10%;
-    position: relative;
-    width: 100%;   /* 1600 px*/
+    position: absolute;
+    width: 91%;   /* 1600 px*/
     max-width: 100em;
     height: 62.5em;
     margin: auto;
+    left: 6%;
+    top: 1%;
     font-size: 1em;
 }
 #formLocator1{
