@@ -7,4 +7,5 @@ urlpatterns = patterns('',
     # url(r'^meeting_creation_success/$', views.meeting_creation_success, name='meeting_creation_success'),
 	url(r'^organized/(?P<meeting_id>\w{6})/$', views.MtnOrganized, name="MtnOrganized"),
 	url(r'^invited/(?P<meeting_id>\w{6})/$', views.MtnInvited, name="MtnInvited"),
+	url(r'^invited/(?P<meeting_id>\w{6})/respond/$', views.respond, name="respond"),
 	)

@@ -4,15 +4,22 @@
   <h1>{{meeting.name}}</h1>
   <h3>organized by {{meeting.organizer}}</h3>
   <h4>{{meeting.pub_date}}</h4>
-  <h5>{{meeting.proposed}}</h5>
+  <h4>{{meeting.description}}</h4>
+  <h5>{{responded}}</h5>
   {%for num in data%}
  	<div style="display:none;"id="data_{{forloop.counter}}">{{num}}</div>
   {%endfor%}
   {%for num in specificTimeDispaly%}
  	<div style="display:none;"id="specific_{{forloop.counter}}">{{num}}</div>
   {%endfor%}
+<form method="POST" action="respond/">{% csrf_token %}
+  {%for num in amountOfAvail%}
+	<input style="display:none;"type="checkbox" name="selectedTime" id="dataCarrieravail_{{forloop.counter0}}"value="{{forloop.counter0}}">
+  {%endfor%}
+  	<input type="submit" id="submitData"value="submit">
+</form>
   <div style="display:none;"id="lengthStorage">{{length}}</div>
-  <div id="scheduleUIwrapper">
+  <div id="scheduleUIwrapperInvite">
   <div id="CalWrapper">
   <div id="container">
   <div id="lines_container"></div>
@@ -41,7 +48,6 @@
 {% endfor %}
 </div><!--end of clockWrapper-->
 </div><!--end of scheduleUIWrapper-->
-
 
 <!--JQEURY************************************************************************
 **********************************************************************************-->
@@ -113,5 +119,30 @@ $("#container").after("<div class='avail_time' id='avail_"+ee+"' style='height:"
 
 $('#avail_'+ee+'').html("<div class='dataCarrier' id='dataDisplayer_"+ee+"'>"+specific[k+0]+specific[k+1]+specific[k+2]+"</div>");
 };
+
+$(".avail_time").hover(
+	function(){
+		$(this).css('background-color','greenyellow');
+	}, function(){
+		$(this).css('background-color','lawngreen');
+	}
+);
+
+$('.avail_time').click(function(){
+	var number = $(this).attr('id');
+	if($("#dataCarrier"+number).attr('checked')==='checked'){
+		$("#dataCarrier"+number).attr('checked',false);
+		$(this).css('opacity', 0.5);
+	}
+	else{
+		$("#dataCarrier"+number).attr('checked',true);
+		$(this).css('opacity',0.9);
+	};
+});
+
+$("#submitData").click(function(){
+	$("#respondData").val();
+});
+
 </script>
 {%endblock%}

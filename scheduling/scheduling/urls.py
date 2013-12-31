@@ -6,6 +6,7 @@ urlpatterns = patterns('',
 	(r'^', include('userprofile.urls')),
 	(r'^loggedin/', include('meetings.urls', namespace='meetings')),
 	# DO I NEED TO CHANGE THIS???
+	url(r'^database/admin/', include(admin.site.urls)),
 	url(r'^$',  'scheduling.views.index'),
 	url(r'^auth/$',  'scheduling.views.auth_view'),
 	url(r'^logout/$', 'scheduling.views.logout'),

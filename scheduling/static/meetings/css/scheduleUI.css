@@ -60,6 +60,20 @@
     border-width: 2px;
     min-height: 2.63157895%;
 }
+.unavailable{
+    background-color: red;
+}
+
+.selectedTime{
+    position: absolute;
+    z-index: 10000;
+    opacity: 0.9;
+    background-color: green;
+    border-style: solid;
+    border-color: darkcyan;
+    border-width: 2px;
+    min-height: 2.63157895%;
+}
 #container{
     width: 100%;   /* 1600 px*/
     max-width: 100em;
@@ -173,4 +187,12 @@
     height: 2px;
     background-color: #dddddd;
     position: absolute;
+}
+
+/*invite page*/
+#scheduleUIwrapperInvite{
+    position: relative;
+    width:80%;
+    top: 10%;
+    height: 100%;
 }

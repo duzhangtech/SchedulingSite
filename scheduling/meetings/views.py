@@ -1,8 +1,9 @@
 #Stdlib imports
+import re
 import string
 import random
-from datetime import date, timedelta
-
+from time import mktime, strptime
+from datetime import datetime, date, timedelta
 from django.core.context_processors import csrf
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.utils import timezone
@@ -45,6 +46,9 @@ for num in range(0,11):
     elif k < 12 :
         clock.append(str(k%12)+"am");
 #data processing
+from time import mktime, strptime
+from datetime import datetime, date
+
 def singleProcessor(string):
     if string[0] == '0':
         if string[2] == '3':
@@ -60,23 +64,27 @@ def singleProcessor(string):
         k = k + 2*(int(string[0:2]) - 5)
 
     return k
-
-def processor(proposed):
+def dateProcessor(timestring):
+    #conver string to datetime object
+    a = strptime(timestring, "%m%d%Y")
+    a = datetime.fromtimestamp(mktime(a))
+    a = a - datetime.today()
+    a = a.days
+    return a + 2
+def processor(proposed): #takeproposed raw data, return the dates in format
     tempStorage = []
     num = len(proposed)/16
-    today = str(date.today())
-    today = today[5:] + "-"+today[0:4]
     for i in range(0,num):
         p = singleProcessor(proposed[16*i:16*(i+1)-12])
         n = singleProcessor(proposed[16*(i+1)-12:16*(i+1)-8])
+        w = dateProcessor(proposed[16*i+8:16*i+16]) 
         tempStorage.append(p)
         tempStorage.append(n)
-        w = 1 + int(proposed[16*i+10:16*i+12]) - int(today[3:5])
         tempStorage.append(w)
     
     return tempStorage
 
-def descriptionProcessor(proposed):
+def descriptionProcessor(proposed): 
     tempStorage = []
     num = len(proposed)/16
     for i in range(0,num):
@@ -104,8 +112,11 @@ def createMtn (request):
     a['list_invited'] = request.user.meetings_invited.all()
     return render_to_response("meetings/createMtn.html", a)
 
+
 def create(request):
-    new_meeting_object = Meeting(meeting_id=index_generator(), description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
+    # the raw value for result
+    length = len(request.POST['proposed'])/16
+    new_meeting_object = Meeting(result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=index_generator(), description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
     new_meeting_object.save()
     for i in range(1, 6):
 		form_in = request.POST['invited_' + str(i)]
@@ -118,21 +129,16 @@ def create(request):
     b['list_organized'] = request.user.meetings_organized.all()
     b['list_invited'] = request.user.meetings_invited.all()  
     b['name'] = new_meeting_object.name
+    
     return render_to_response('meetings/meeting_creation_success.html', b)
 
 def MtnOrganized(request, meeting_id):
     meeting = Meeting.objects.get(meeting_id = meeting_id)
-    b = a
-    b['meeting'] = meeting
-    b['user'] = request.user
-    b['list_organized'] = request.user.meetings_organized.all()
-    b['list_invited'] = request.user.meetings_invited.all()
-    b['data'] = processor(meeting.proposed)     
-    return render_to_response('meetings/meeting_organized.html', b)
-
-def MtnInvited(request, meeting_id):
-    meeting = Meeting.objects.get(meeting_id = meeting_id)
-    b = a
+    b = {}
+    b.update(csrf(request))
+    b['clock'] = clock
+    b['date'] = display
+    b['datesForData'] = datesForData
     b['meeting'] = meeting
     b['user'] = request.user
     b['list_organized'] = request.user.meetings_organized.all()
@@ -140,4 +146,53 @@ def MtnInvited(request, meeting_id):
     b['data'] = processor(meeting.proposed)  
     b['length'] = len(b['data'])/3
     b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
+    b['amountOfAvail'] = [x for x in range(0, b['length'])]
+#processing --------------
+
+    return render_to_response('meetings/meeting_organized.html', b)
+
+def MtnInvited(request, meeting_id):
+    meeting = Meeting.objects.get(meeting_id = meeting_id)
+    b = {}
+    b.update(csrf(request))
+    b['clock'] = clock
+    b['date'] = display
+    b['datesForData'] = datesForData
+    b['meeting'] = meeting
+    b['user'] = request.user
+    b['list_organized'] = request.user.meetings_organized.all()
+    b['list_invited'] = request.user.meetings_invited.all()     
+    b['data'] = processor(meeting.proposed)  
+    b['length'] = len(b['data'])/3
+    b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
+    b['amountOfAvail'] = [x for x in range(0, b['length'])]
     return render_to_response('meetings/meeting_invited.html', b)
+
+def respond(request, meeting_id):
+    meeting = Meeting.objects.get(meeting_id = meeting_id)
+    b = {}
+    b.update(csrf(request))
+    b['clock'] = clock
+    b['date'] = display
+    b['datesForData'] = datesForData
+    b['meeting'] = meeting
+    b['user'] = request.user
+    b['list_organized'] = request.user.meetings_organized.all()
+    b['list_invited'] = request.user.meetings_invited.all()     
+    b['data'] = processor(meeting.proposed)  
+    b['length'] = len(b['data'])/3
+    b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
+    b['amountOfAvail'] = [x for x in range(0, b['length'])]
+    b['responded'] = "You have selected"
+    choice = "".join(request.POST.getlist("selectedTime"))
+    choice = str(filter(lambda x: x.isdigit(), choice))
+    d = meeting.respond_set.create(responder = request.user, choice = choice, pub_date=timezone.now())
+# result processing
+    newResult = str(meeting.result)
+    for letter in newResult:
+        if letter not in choice:
+            temp = newResult.replace(letter, '')
+            newResult = temp
+    meeting.result = newResult
+    meeting.save()
+    return render_to_response('meetings/meeting_invited.html', b)    

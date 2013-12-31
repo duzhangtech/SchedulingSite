@@ -4,11 +4,15 @@
   <h1>{{meeting.name}}</h1>
   <h3>organized by {{meeting.organizer}}</h3>
   <h4>{{meeting.pub_date}}</h4>
-  <h5>{{meeting.proposed}}</h5>
+  <h4>{{meeting.description}}</h4>
   {%for num in data%}
  	<div style="display:none;"id="data_{{forloop.counter}}">{{num}}</div>
   {%endfor%}
+  {%for num in specificTimeDispaly%}
+ 	<div style="display:none;"id="specific_{{forloop.counter}}">{{num}}</div>
+  {%endfor%}
   <div style="display:none;"id="lengthStorage">{{length}}</div>
+  <div style="display:none;"id="resultStorage">{{meeting.result}}</div>
   <div id="scheduleUIwrapper">
   <div id="CalWrapper">
   <div id="container">
@@ -88,25 +92,36 @@ for(var i = 0; i < 41; i++){
     gridY[i] = 2.439024 * i; // generate the horizontal grid on the div
 }
 
-//generate the left attributes of avail_time slots for each one
+//generate the left attributes of avail_time slots for each ones
 for(var i=1; i <8;i++){
   left_mark=14.285714*(i-1);
   initX[i] = 0.4+left_mark*0.9999;
 };
-var data = new Array();
-var data_1= $("#data_1").html();
-var data_2= $("#data_2").html();
-data_2 = parseInt(data_2) - parseInt(data_1);
-var data_3= $("#data_3").html();
 
+//specific time display
+var data = new Array();
+var specific = new Array();
 var length = parseInt($("#lengthStorage").html());
-for(var ee =0; ee<length+1;ee++){
+for(var ee =0; ee<length;ee++){
 	data[0+3*ee] = $("#data_"+(1+3*ee)+"").html();
 	data[1+3*ee] = $("#data_"+(2+3*ee)+"").html();
-	data[1+3*ee] = parseInt(data[2+3*ee]) - parseInt(data[1+3*ee]);
+	data[1+3*ee] = parseInt(data[1+3*ee]) - parseInt(data[0+3*ee]);
 	data[2+3*ee] = $("#data_"+(3+3*ee)+"").html();
 
-$("#container").after("<div class='avail_time' id='avail_"+ee+"' style='height:"+data_2*2.439024+"%; top: "+gridY[data[0+3*ee]]+"%; left:"+initX[data[2+3*ee]]+"%; position:absolute; width:"+WIDTH+"%; '></div>");
+	specific[0+3*ee] = $("#specific_"+(1+3*ee)+"").html();
+	specific[1+3*ee] = $("#specific_"+(2+3*ee)+"").html();
+	specific[2+3*ee] = $("#specific_"+(3+3*ee)+"").html();
+	var k = ee*3;
+$("#container").after("<div class='avail_time' id='avail_"+ee+"' style='height:"+data[1+3*ee]*2.439024+"%; top: "+gridY[data[0+3*ee]]+"%; left:"+initX[data[2+3*ee]]+"%; position:absolute; width:"+WIDTH+"%; '></div>");
+
+$('#avail_'+ee+'').html("<div class='dataCarrier' id='dataDisplayer_"+ee+"'>"+specific[k+0]+specific[k+1]+specific[k+2]+"</div>");
+};
+
+// change the color of unavailable time
+var result = $("#resultStorage").html();
+$('.avail_time').addClass("unavailable");
+for(var ee =0; ee<result.length;ee++){
+$('#avail_'+result[ee]+'').removeClass('unavailable');
 };
 </script>
 {%endblock%}
