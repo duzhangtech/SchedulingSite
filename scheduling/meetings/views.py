@@ -5,6 +5,8 @@ import random
 from time import mktime, strptime
 from datetime import datetime, date, timedelta
 from django.core.context_processors import csrf
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -166,7 +168,11 @@ def MtnInvited(request, meeting_id):
     b['length'] = len(b['data'])/3
     b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
     b['amountOfAvail'] = [x for x in range(0, b['length'])]
-    return render_to_response('meetings/meeting_invited.html', b)
+    try:
+        c = request.user.response.get(meeting = meeting,)
+        return HttpResponseRedirect('/loggedin/invited/%w/respond' % meeting.meeting_id)
+    except ObjectDoesNotExist:
+        return render_to_response('meetings/meeting_invited.html', b)
 
 def respond(request, meeting_id):
     meeting = Meeting.objects.get(meeting_id = meeting_id)
