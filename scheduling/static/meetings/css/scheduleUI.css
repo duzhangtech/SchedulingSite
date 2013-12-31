@@ -123,6 +123,13 @@
     margin-left: 15%;
     margin-top: 5%;
 }
+.trashcan{
+    position: absolute;
+    width: 0.8em;
+    height: 1em;
+    margin-left: 0.85em;
+    z-index: 99999;
+}
 #clockWrapper{
     position: absolute;
     top: 2%;  

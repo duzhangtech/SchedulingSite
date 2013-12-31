@@ -1,5 +1,5 @@
 {%extends "loggedin.html"%}
-
+{% load static %}
 <body>
 
 {% block content%}
@@ -116,6 +116,7 @@ var dragResize=function(){
           snap:'.lines',
           snapTolerance: 30,
           snapMode:'inner',
+          cancel:'.trashcan',
           containment: '#container',
       });
 
@@ -129,6 +130,8 @@ var dragResize=function(){
 //different slot generators for seven lanes
 var column_init = function(num){
 $("#col_"+num).mousedown( function(e) {
+
+
    counter = counter+1;
    initY = CalTopY+(e.pageY-8)/10;  // % conversion 
    var nearestY= gridY[0];
@@ -149,6 +152,7 @@ $("#col_"+num).mousedown( function(e) {
 }); 
 };
 
+
 column_init(7);
 column_init(6);
 column_init(5);
@@ -156,7 +160,12 @@ column_init(4);
 column_init(3);
 column_init(2);
 column_init(1);
-
+$('.trashcan').click(function(){
+  var message = confirm("Delete the slot time?");
+  if(message){
+      $(this).parent().parent().remove();
+  };
+});
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&xcontinue CORE&&&&&&&&&&&&&&7
 $(document).mousemove( function(e) {
 
@@ -224,8 +233,13 @@ $(document).mousemove( function(e) {
     var bottomForData = $("#slot_"+w+"_finalize").height();
     bottomForData = processMessageTime(Math.round(((bottomForData + topForData)/containerHeight)/0.024378));
     topForData = processMessageTime(Math.round((topForData/containerHeight)/0.024378));
-    $("#dataCarrier_"+w+"").html(""+topForData+"-"+bottomForData+"");
-
+    $("#dataCarrier_"+w+"").html(""+topForData+"-"+bottomForData+"<a class='trashcan' href='#'><img style='width:1em;height:1em;' src={% static 'meetings/image/trashcan.png' %} /></a>");
+$('.trashcan').click(function(){
+  var message = confirm("Delete the slot time?");
+  if(message){
+      $(this).parent().parent().remove();
+  };
+});
 
 };
   for(var cc=1; cc < counter+1;cc++){
@@ -239,7 +253,7 @@ $("#submit").click(function(e){
   }; 
   $("#dataStorage").val(proposed);
 });
-//parse the date
+//delete the current selection
 
 
 //merge the messages
