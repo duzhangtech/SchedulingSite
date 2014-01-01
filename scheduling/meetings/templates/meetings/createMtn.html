@@ -258,7 +258,8 @@ $('.trashcan').click(function(){
 
 };
   for(var cc=1; cc < counter+1;cc++){
-    processData[cc] = $("#dataCarrier_"+cc+"").html().replace(/[^\d.]/g, "") + $("#dataCarrier_date_"+cc+"").html().replace(/[^\d.]/g, "");
+// replace : and '' and get rid of the trashcan image symbol 12.31.2013
+    processData[cc] = $("#dataCarrier_"+cc+"").html().replace(/[^\d.]/g, "").slice(0, 8) + $("#dataCarrier_date_"+cc+"").html().replace(/[^\d.]/g, "");
   };
 });
 var proposed = "";
