@@ -10,9 +10,8 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.utils import timezone
 from django.contrib.auth.models import User
-#from django.core.urlresolvers import reverse
-from django.http import HttpResponse#, HttpResponseRedirect
-from meetings.models import Meeting
+from django.http import HttpResponse, HttpResponseRedirect
+from meetings.models import Meeting, Respond
 # Define the date row
 def giveDate(num):
     if num == 0: return 'Sunday'
@@ -170,7 +169,7 @@ def MtnInvited(request, meeting_id):
     b['amountOfAvail'] = [x for x in range(0, b['length'])]
     try:
         c = request.user.response.get(meeting = meeting,)
-        return HttpResponseRedirect('/loggedin/invited/%w/respond' % meeting.meeting_id)
+        return HttpResponseRedirect('/loggedin/invited/%s/responded' % meeting.meeting_id)
     except ObjectDoesNotExist:
         return render_to_response('meetings/meeting_invited.html', b)
 
@@ -192,7 +191,16 @@ def respond(request, meeting_id):
     b['responded'] = "You have selected"
     choice = "".join(request.POST.getlist("selectedTime"))
     choice = str(filter(lambda x: x.isdigit(), choice))
-    d = meeting.respond_set.create(responder = request.user, choice = choice, pub_date=timezone.now())
+
+    try :
+        c = request.user.response.get(meeting = meeting)
+        choice = "".join(request.POST.getlist("selectedTime"))
+        choice = str(filter(lambda x: x.isdigit(), choice))
+        c.choice = choice
+        c.save()
+    except ObjectDoesNotExist:
+# result processing
+        d = meeting.respond_set.create(responder = request.user, choice = choice, pub_date=timezone.now())
 # result processing
     newResult = str(meeting.result)
     for letter in newResult:
@@ -201,4 +209,24 @@ def respond(request, meeting_id):
             newResult = temp
     meeting.result = newResult
     meeting.save()
-    return render_to_response('meetings/meeting_invited.html', b)    
+
+    return HttpResponseRedirect('/loggedin/invited/%s/responded' % meeting.meeting_id)
+def responded(request, meeting_id):
+    meeting = Meeting.objects.get(meeting_id = meeting_id)
+    b = {}
+    b.update(csrf(request))
+    b['clock'] = clock
+    b['date'] = display
+    b['datesForData'] = datesForData
+    b['meeting'] = meeting
+    b['user'] = request.user
+    b['list_organized'] = request.user.meetings_organized.all()
+    b['list_invited'] = request.user.meetings_invited.all()     
+    b['data'] = processor(meeting.proposed)  
+    b['length'] = len(b['data'])/3
+    b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
+    b['amountOfAvail'] = [x for x in range(0, b['length'])]
+    b['responded'] = "You have selected, just submit another form to update your results"
+#update the new mtn
+# result processing
+    return render_to_response('meetings/meeting_invited.html', b)

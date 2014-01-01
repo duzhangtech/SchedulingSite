@@ -1,9 +1,13 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
+#core
 from django.contrib import auth
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.context_processors import csrf
 from forms import MyRegistrationForm
 from django.contrib.auth.decorators import login_required
+#models
+from meetings.models import Meeting, Respond
 
 def index(request):
 	c = {}
@@ -23,9 +27,13 @@ def auth_view(request):
 
 @login_required(login_url="/")
 def loggedin(request):
-	organized_list = request.user.meetings_organized.all()
-	invited_list = request.user.meetings_invited.all()
-	return render_to_response('loggedin.html', {'user': request.user, 'list_organized': organized_list, 'list_invited': invited_list,})
+	try: 
+		meeting = request.user.meetings_organized.order_by('-pub_date')[0]
+		return HttpResponseRedirect('/loggedin/organized/%s/' % meeting.meeting_id)
+	except ObjectDoesNotExist:
+		organized_list = request.user.meetings_organized.all()
+		invited_list = request.user.meetings_invited.all()
+		return render_to_response('loggedin.html', {'user': request.user, 'list_organized': organized_list, 'list_invited': invited_list,})
 
 def invalid_login(request):
 	c = {}
