@@ -30,7 +30,7 @@ def loggedin(request):
 	try: 
 		meeting = request.user.meetings_organized.order_by('-pub_date')[0]
 		return HttpResponseRedirect('/loggedin/organized/%s/' % meeting.meeting_id)
-	except ObjectDoesNotExist:
+	except IndexError:
 		organized_list = request.user.meetings_organized.all()
 		invited_list = request.user.meetings_invited.all()
 		return render_to_response('loggedin.html', {'user': request.user, 'list_organized': organized_list, 'list_invited': invited_list,})

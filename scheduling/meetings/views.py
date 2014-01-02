@@ -93,6 +93,15 @@ def descriptionProcessor(proposed):
         tempStorage.append('-')
         tempStorage.append(proposed[4+i*16:6+i*16]+":"+proposed[6+i*16:8+i*16])
     return tempStorage
+#organizer page's display info processor
+def organizerPageProcessor(proposed):
+    tempStorage = []
+    num = len(proposed)/16
+    for i in range(0,num):
+        tempStorage.append(proposed[16*i+8:16*i+10]+'/'+proposed[16*i+10:16*i+12])
+        tempStorage.append(proposed[0+i*16:2+i*16]+":"+proposed[2+i*16:4+i*16]+'-'+proposed[4+i*16:6+i*16]+":"+proposed[6+i*16:8+i*16])
+    tempStorage = [x+y for x,y in zip(tempStorage[0::2], tempStorage[1::2])]
+    return tempStorage
 #6-digit random id generator
 def index_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for x in range(size))
@@ -146,11 +155,37 @@ def MtnOrganized(request, meeting_id):
     b['list_invited'] = request.user.meetings_invited.all()     
     b['data'] = processor(meeting.proposed)  
     b['length'] = len(b['data'])/3
+    length = len(b['data'])/3
     b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
+    b['infoOnTop'] = organizerPageProcessor(meeting.proposed)
     b['amountOfAvail'] = [x for x in range(0, b['length'])]
-#processing --------------
-
+#processing for responses--------------
+    k = '<td>&#32</td>'
+#first row
+    for response in meeting.responses.all():
+        k = k + '<td>'+response.responder.username+'</td>'
+    k = '<tr>'+k+'</tr>'
+#other rows
+    counter = 0 
+    for num in organizerPageProcessor(meeting.proposed):
+        k = k + '<tr>'
+        k = k + '<td>'+ num +'</td>'
+        for x in range(0, meeting.responses.count()):
+            thisResponder = Respond.objects.filter(meeting = meeting)[x]
+            if str(counter) in thisResponder.choice:
+                k = k + '<td class = "availChoice">&#10004</td>'
+            else:
+                k = k + '<td class = "unavailChoice">&#215</td>'
+        counter = counter + 1
+        k = k + '</tr>'
+    k= '<table>' + k +'</table>'
+    b['table'] = k
     return render_to_response('meetings/meeting_organized.html', b)
+
+def delete(request, meeting_id):
+    meeting = Meeting.objects.get(meeting_id = meeting_id,)
+    meeting.delete()
+    return HttpResponseRedirect('/loggedin/')
 
 def MtnInvited(request, meeting_id):
     meeting = Meeting.objects.get(meeting_id = meeting_id)

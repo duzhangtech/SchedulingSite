@@ -211,3 +211,10 @@
     top: 5%;
     height: 100%;
 }
+/*organize page*/
+.availChoice{
+    background-color: lawngreen;
+}
+.unavailChoice{
+    background-color: lightgray;
+}

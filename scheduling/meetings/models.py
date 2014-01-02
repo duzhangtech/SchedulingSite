@@ -21,6 +21,6 @@ class Respond(models.Model):
 	preference = models.CharField(max_length=50, blank = True)
 	pub_date = models.DateTimeField('date published')
 	responder = models.ForeignKey(User, related_name='response')
-	meeting = models.ForeignKey(Meeting)
+	meeting = models.ForeignKey(Meeting,related_name='responses')
 	def __str__(self):
 		return self.choice
