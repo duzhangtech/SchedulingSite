@@ -47,8 +47,6 @@ for num in range(0,11):
     elif k < 12 :
         clock.append(str(k%12)+"am");
 #data processing
-from time import mktime, strptime
-from datetime import datetime, date
 
 def singleProcessor(string):
     if string[0] == '0':
@@ -98,7 +96,7 @@ def organizerPageProcessor(proposed):
     tempStorage = []
     num = len(proposed)/16
     for i in range(0,num):
-        tempStorage.append(proposed[16*i+8:16*i+10]+'/'+proposed[16*i+10:16*i+12])
+        tempStorage.append(proposed[16*i+8:16*i+10]+'/'+proposed[16*i+10:16*i+12]+'   ')
         tempStorage.append(proposed[0+i*16:2+i*16]+":"+proposed[2+i*16:4+i*16]+'-'+proposed[4+i*16:6+i*16]+":"+proposed[6+i*16:8+i*16])
     tempStorage = [x+y for x,y in zip(tempStorage[0::2], tempStorage[1::2])]
     return tempStorage
@@ -128,6 +126,9 @@ def create(request):
     length = len(request.POST['proposed'])/16
     new_meeting_object = Meeting(result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=index_generator(), description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
     new_meeting_object.save()
+    if request.POST.get('visibility') == 'True':
+        new_meeting_object.visibility = True;
+        new_meeting_object.save()
     for i in range(1, 6):
 		form_in = request.POST['invited_' + str(i)]
 		if form_in != '':
@@ -173,9 +174,9 @@ def MtnOrganized(request, meeting_id):
         for x in range(0, meeting.responses.count()):
             thisResponder = Respond.objects.filter(meeting = meeting)[x]
             if str(counter) in thisResponder.choice:
-                k = k + '<td class = "availChoice">&#10004</td>'
+                k = k + '<td class = "availChoice">&#10003</td>'
             else:
-                k = k + '<td class = "unavailChoice">&#215</td>'
+                k = k + '<td class = "unavailChoice">&#10007</td>'
         counter = counter + 1
         k = k + '</tr>'
     k= '<table>' + k +'</table>'
@@ -186,6 +187,47 @@ def delete(request, meeting_id):
     meeting = Meeting.objects.get(meeting_id = meeting_id,)
     meeting.delete()
     return HttpResponseRedirect('/loggedin/')
+
+def updateMtn(request, meeting_id):
+    meeting = Meeting.objects.get(meeting_id = meeting_id,)
+    a = {}
+    a.update(csrf(request))
+    a['user'] = request.user
+    a['clock'] = clock
+    a['date'] = display
+    a['datesForData'] = datesForData
+    a['list_organized'] = request.user.meetings_organized.all()
+    a['list_invited'] = request.user.meetings_invited.all()
+    a['meeting'] = meeting
+    a['data'] = processor(meeting.proposed)  
+    a['length'] = len(a['data'])/3
+    a['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
+    a['amountOfAvail'] = [x for x in range(0, a['length'])]
+    if meeting.visibility == True:
+        a['visibility'] = 'checked'
+    else:
+        a['visibility'] = ''
+    return render_to_response("meetings/updateMtn.html", a)
+
+def update(request, meeting_id):
+    meeting = Meeting.objects.get(meeting_id = meeting_id,)
+#update meeting's parameters
+    length = len(request.POST['proposed'])/16
+    meeting = Meeting(pk = meeting.pk, result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=meeting.meeting_id, description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
+    meeting.save()
+    if request.POST.get('visibility') == 'True':
+        meeting.visibility = True
+    else:
+        meeting.visibility = False
+    meeting.save()
+    for i in range(1, 6):
+        form_in = request.POST['invited_' + str(i)]
+        if form_in != '':
+            u = User.objects.get(username=form_in)
+            meeting.invited.add(u)
+    meeting.save()
+
+    return HttpResponseRedirect('/loggedin/organized/%s/' % meeting.meeting_id)
 
 def MtnInvited(request, meeting_id):
     meeting = Meeting.objects.get(meeting_id = meeting_id)
@@ -202,6 +244,11 @@ def MtnInvited(request, meeting_id):
     b['length'] = len(b['data'])/3
     b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
     b['amountOfAvail'] = [x for x in range(0, b['length'])]
+    othersInvited = 'others invited: '
+    for other in meeting.invited.all():
+        othersInvited = othersInvited + '    ' +str(other)
+    if meeting.visibility == True:
+        b['othersInvited'] = othersInvited
     try:
         c = request.user.response.get(meeting = meeting,)
         return HttpResponseRedirect('/loggedin/invited/%s/responded' % meeting.meeting_id)
@@ -235,7 +282,7 @@ def respond(request, meeting_id):
         c.save()
     except ObjectDoesNotExist:
 # result processing
-        d = meeting.respond_set.create(responder = request.user, choice = choice, pub_date=timezone.now())
+        d = meeting.responses.create(responder = request.user, choice = choice, pub_date=timezone.now())
 # result processing
     newResult = str(meeting.result)
     for letter in newResult:

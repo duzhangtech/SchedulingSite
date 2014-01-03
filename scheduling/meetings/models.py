@@ -13,6 +13,7 @@ class Meeting (models.Model):
 	meeting_id = models.CharField(max_length = 7)
 	result = models.CharField(max_length = 20)
 	pub_date = models.DateTimeField('date published')
+	visibility = models.BooleanField(default = False)
 	def __str__(self):
 		return self.name
 

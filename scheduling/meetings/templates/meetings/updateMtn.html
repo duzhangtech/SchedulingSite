@@ -3,15 +3,24 @@
 <body>
 
 {% block content%}
+<!--DATA from Python-->
+<div id ='lengthStorage'style="display:none;">{{length}}</div>
+{%for num in data%}
+  <div style="display:none;"id="data_{{forloop.counter}}">{{num}}</div>
+  {%endfor%}
+  {%for num in specificTimeDispaly%}
+  <div style="display:none;"id="specific_{{forloop.counter}}">{{num}}</div>
+  {%endfor%}
+
 <div id = "formWrapper">
-<form action="{% url 'meetings:create' %}" method="POST">{% csrf_token %}
+<form action="update/" method="POST">{% csrf_token %}
     <div id="formLocator1">
     <h3>Please type the name of your meeting</h3>
-    <input type="textarea" name="meeting_name" />
+    <input type="textarea" value = '{{meeting.name}}'name="meeting_name" />
     </div>
     <div id="formLocator2">
     <h3>description</h3>
-    <input id="formDescription" type="textarea" name="meeting_description" />
+    <input id="formDescription" value = '{{meeting.description}}'type="textarea" name="meeting_description" />
     </div>
     <h3>Please type the username of those you would like to invite</h3>
     <input type="textarea" name="invited_1" />
@@ -23,10 +32,11 @@
 <!---->
 <br/>
   <label for='visibility'>Want others to see?</label>
-  <input type='checkbox' value='True' name='visibility'/>
+  <input type='checkbox' checked='{{visibility}}'value='True' name='visibility'/>
   <input type="submit" class="submit" value="submit" id="submit"/>
 </form>
 </div> <!--the end of formWrapper-->
+
 <div id="scheduleUIwrapper">
 <div id='scrollWindow'>
  
@@ -100,12 +110,12 @@
     var finalY;
     var gridY = new Array(); 
     var test;  
+    var include = new Array();
     var initTopPosition; // carry the top position data from 1st funtion to 2nd
     var message; // carry the message
     var messageTime;
-    var include = new Array();
     var messageDate;
-  var left_mark = 0;
+    var left_mark = 0;
   var initX = new Array();
 for(var i = 0; i < 41; i++){
     gridY[i] = 2.439024 * i; // generate the horizontal grid on the div
@@ -124,8 +134,35 @@ $('#scrollWindow').scroll(function(){
   CalTopY_scroll = $('#scrollWindow').scrollTop();
   CalTopY = CalTopY_base + CalTopY_scroll/10;
 });
+var data = new Array();
+var specific = new Array();
+var length = parseInt($("#lengthStorage").html());
+for(var ee =0; ee<length;ee++){
+  data[0+3*ee] = $("#data_"+(1+3*ee)+"").html();
+  data[1+3*ee] = $("#data_"+(2+3*ee)+"").html();
+  data[1+3*ee] = parseInt(data[1+3*ee]) - parseInt(data[0+3*ee]);
+  data[2+3*ee] = $("#data_"+(3+3*ee)+"").html();
 
+  specific[0+3*ee] = $("#specific_"+(1+3*ee)+"").html();
+  specific[1+3*ee] = $("#specific_"+(2+3*ee)+"").html();
+  specific[2+3*ee] = $("#specific_"+(3+3*ee)+"").html();
+var tempIndex = parseInt(data[2+3*ee]);
+var ww =  ee + 1;
+$("#col_"+tempIndex).after("<div class='avail_time' id='slot_"+ww+"_finalize' style='height:"+data[1+3*ee]*2.439024+"%; top: "+gridY[data[0+3*ee]]+"%; left:"+initX[data[2+3*ee]]+"%; position:absolute; width:"+WIDTH+"%; '></div>");
 
+$('#slot_'+ww+'_finalize').html('<div style="display: none;" id="dataCarrier_date_'+ww+'">'+'</div>'+"<div class='dataCarrier' id='dataCarrier_"+ww+"'>"+specific[0+3*ee]+specific[1+3*ee]+specific[2+3*ee]+"</div>"+'<div class="avail_time_bottom" id="slot_'+ww+'_bottom" style="width:100%; position:absolute; background-color: red; height:5px; bottom: 0;"></div>');
+$('#dataCarrier_date_'+ww).html($('#datesForData_'+tempIndex).html());
+$('#dataCarrier_'+ww).html("<a class='trashcan' href='#'><img style='width:1em;height:1em;' src={% static 'meetings/image/trashcan.png' %} /></a>");
+
+counter = ww;
+    if($("#slot_"+counter+"_finalize").attr('id') == "slot_"+counter+"_finalize"&& jQuery.inArray(counter , include) === -1){
+      include.push(counter);
+    };
+};
+
+$('body').mousemove(function(){
+  dragResize();
+});
 //Drag&Resize:
 var dragResize=function(){
       $(".avail_time").draggable({ 
@@ -134,6 +171,7 @@ var dragResize=function(){
           snap:'.lines',
           snapTolerance: 30,
           snapMode:'inner',
+          cancel:'.trashcan',
           containment: '#container',
       });
 
@@ -144,7 +182,6 @@ var dragResize=function(){
           containment: '#container',        
       });
 };
-
 //different slot generators for seven lanes
 var column_init = function(num){
 $("#col_"+num).mousedown( function(e) {
@@ -178,6 +215,7 @@ column_init(4);
 column_init(3);
 column_init(2);
 column_init(1);
+//delete the current selection
 
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&xcontinue CORE&&&&&&&&&&&&&&7
 $(document).mousemove( function(e) {
@@ -207,7 +245,7 @@ $(document).mouseup( function(e) {
     if($("#slot_"+counter+"_finalize").attr('id') == "slot_"+counter+"_finalize"&& jQuery.inArray(counter , include) === -1){
       include.push(counter);
     };
-});     
+});      
 
 //parse the selected begining time
 var processMessageTime = function(messageTime){
@@ -242,17 +280,19 @@ return messageTime;
 }
 
 var containerHeight = $("#container").height();
+var processData = new Array();
 
 $(document).mousemove( function(e) {
-//$('#formDescription').val(include[0]+''+include[1]+''+include[2]+''+include[3]+''+include[4]+''+include[5]+''+include[6]+'');
+  //$('#formDescription').val(include[0]+''+include[1]+''+include[2]+''+include[3]+''+include[4]+''+include[5]+''+include[6]+'');
   for(var w=1; w < counter+1;w++){
     var topForData = parseInt($("#slot_"+w+"_finalize").css("top"));
     var bottomForData = $("#slot_"+w+"_finalize").height();
     bottomForData = processMessageTime(Math.round(((bottomForData + topForData)/containerHeight)/0.024378));
     topForData = processMessageTime(Math.round((topForData/containerHeight)/0.024378));
     $("#dataCarrier_"+w+"").html(""+topForData+"-"+bottomForData+"<a class='trashcan' href='#'><img style='width:1em;height:1em;' src={% static 'meetings/image/trashcan.png' %} /></a>");
+//delete feature
 
-};
+//1-3-2014 unbind() stops multiple firing
 $('.trashcan').unbind().click(function(){
 
       var zzz = $(this).parent().attr('id').replace(/[^\d.]/g,  "");
@@ -262,7 +302,11 @@ $('.trashcan').unbind().click(function(){
       $(this).parent().parent().remove();
 
 });
+
+};
+
 });
+// submit the data
 var processData = new Array();
 
 $("#submit").click(function(e){

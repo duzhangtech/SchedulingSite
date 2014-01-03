@@ -6,6 +6,7 @@
   <h4>{{meeting.pub_date}}</h4>
   <h4>{{meeting.description}}</h4>
   <h5>{{responded}}</h5>
+  <h5>{{othersInvited}}</h5>
   {%for num in data%}
  	<div style="display:none;"id="data_{{forloop.counter}}">{{num}}</div>
   {%endfor%}
@@ -143,10 +144,6 @@ $('.avail_time').click(function(){
 		$("#dataCarrier"+number).attr('checked',true);
 		$(this).css('opacity',0.9);
 	};
-});
-
-$("#submitData").click(function(){
-	$("#respondData").val();
 });
 
 </script>
