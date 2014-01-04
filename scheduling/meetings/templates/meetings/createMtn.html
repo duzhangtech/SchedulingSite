@@ -293,9 +293,11 @@ $('#scopeRight').unbind().click(function(){
   changeDatePositive(5);
   changeDatePositive(6);
   changeDatePositive(7);
-  $('.scope'+scope).fadeOut('fast');
+  $('.scope'+scope).fadeTo('fast', 0);
+  $('.scope'+scope).css('display', 'none');
   scope = scope + 1;
-  $('.scope'+scope).fadeIn('fast');
+  $('.scope'+scope).fadeTo('fast', 0.5);
+  $('.scope'+scope).css('display', '');
 });
 $('#scopeLeft').unbind().click(function(){
   if(scope > 0){
@@ -306,9 +308,9 @@ $('#scopeLeft').unbind().click(function(){
   changeDateNegative(5);
   changeDateNegative(6);
   changeDateNegative(7);
-  $('.scope'+scope).fadeOut('fast');
+  $('.scope'+scope).fadeTo('fast', 0);
   scope = scope - 1; 
-  $('.scope'+scope).fadeIn('fast');
+  $('.scope'+scope).fadeTo('fast', 0.5);
   }
 });
 
@@ -426,19 +428,24 @@ if(messageTime === "25:00"){
   messageTime = "1:00"};
 return messageTime;
 }
-
-var containerHeight = $("#container").height();
-
+//data processing 
+var containerHeight = parseInt($("#container").height());
+var topForData, bottomForData, topForData2;
 $(document).mousemove( function(e) {
-//$('#formDescription').val(include[0]+''+include[1]+''+include[2]+''+include[3]+''+include[4]+''+include[5]+''+include[6]+'');
-  for(var w=1; w < counter+1;w++){
-    var topForData = parseInt($("#slot_"+w+"_finalize").css("top"));
-    var bottomForData = $("#slot_"+w+"_finalize").height();
-    bottomForData = processMessageTime(Math.round(((bottomForData + topForData)/containerHeight)/0.024378));
-    topForData = processMessageTime(Math.round((topForData/containerHeight)/0.024378));
-    $("#dataCarrier_"+w+"").html(""+topForData+"-"+bottomForData+"<a class='trashcan' href='#'><img style='width:1em;height:1em;' src={% static 'meetings/image/trashcan.png' %} /></a>");
 
-};
+  for(var w=0; w < include.length;w++){
+    if($("#slot_"+include[w]+"_finalize").css("top").toString().slice(-1) != '%'){
+    topForData = parseInt($("#slot_"+include[w]+"_finalize").css("top"));
+    }
+    bottomForData = $("#slot_"+include[w]+"_finalize").height();
+    bottomForData = processMessageTime(Math.round(((bottomForData + topForData)/containerHeight)/0.024378));
+    //$('#formDescription').val(topForData2+'----'+bottomForData);
+    topForData2 = processMessageTime(Math.round((topForData/containerHeight)/0.024378));
+
+    $("#dataCarrier_"+include[w]+"").html(""+topForData2+"-"+bottomForData+"<a class='trashcan' href='#'><img style='width:1em;height:1em;' src={% static 'meetings/image/trashcan.png' %} /></a>");
+
+  };
+
 $('.trashcan').unbind().click(function(){
 
       var zzz = $(this).parent().attr('id').replace(/[^\d.]/g,  "");
@@ -446,8 +453,7 @@ $('.trashcan').unbind().click(function(){
       var index = jQuery.inArray(zzz, include);
       include.splice(index,1);
       $(this).parent().parent().remove();
-
-});
+  });
 });
 var processData = new Array();
 
