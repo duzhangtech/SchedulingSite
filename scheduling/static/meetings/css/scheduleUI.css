@@ -95,6 +95,18 @@
     top: 0%;
     font-size: 1em;
 }
+#scopeLeft{
+    float: left;
+    position: absolute;
+    left: -4%;
+    margin-top: 2.2%;
+}
+#scopeRight{
+    float: right;
+    position: absolute;
+    right: -4%;
+    margin-top: 2.2%;
+}
 .dateSpacer{
     position: absolute;
 }
