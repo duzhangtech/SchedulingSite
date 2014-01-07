@@ -1,5 +1,10 @@
 {%extends "loggedin.html"%}
-
+{% if guest%}
+{% block sidebar%}
+	<p style="left: 20%; max-width: 50%; position: absolute; top:15%;">You don't have a sidebar because you have not registered</p>
+	<a style="position: absolute; left: 20%; top:28%;" href="/">create a sweet account</a>		
+{% endblock%}
+{% endif %}
 {% block content%}
   <h1>{{meeting.name}}</h1>
   <h3>organized by {{meeting.organizer}}</h3>

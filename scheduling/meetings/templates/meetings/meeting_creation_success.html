@@ -4,4 +4,6 @@
 <h1>You have successfully created a meeting</h1>
 <h2>{{name}}</h2>
 <a href="{% url 'loggedin' %}">go home</a>
+<h4>Share the mtns with friends:</h4>
+<h6>http://localhost:8000/loggedin/invited/{{ id }}/</h6>
 {%endblock%}

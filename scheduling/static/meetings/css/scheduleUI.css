@@ -1,13 +1,4 @@
 /*disable selection in chrome*/
-*::selection{
-    background: transparent;
-}
-*::-moz-selection{
-    background: transparent;
-}
-*::-webkit-selection{
-    background: transparent;
-}
 #col_1
 {
     left: 0%;
@@ -137,8 +128,8 @@
 }
 .trashcan{
     position: absolute;
-    width: 0.8em;
-    height: 1em;
+    font-size: 1.6em;
+    top: -0.2em;
     margin-left: 0.85em;
     z-index: 99999;
 }
@@ -185,6 +176,9 @@
 }
 #formDescription{
     width: 100%;
+}
+#shareTextarea{
+    width: 90%;
 }
 #formWrapper{
     position: absolute;

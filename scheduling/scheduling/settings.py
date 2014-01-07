@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+
 PROJECT_DIRECTORY = os.getcwd()
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -43,6 +44,8 @@ INSTALLED_APPS = (
     'userprofile',
     'meetings',
 )
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -103,3 +106,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
+
+#email loggin
+AUTHENTICATION_BACKENDS = ('backends.EmailAuthBackend',)

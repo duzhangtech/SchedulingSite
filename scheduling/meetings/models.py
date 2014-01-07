@@ -22,6 +22,7 @@ class Respond(models.Model):
 	preference = models.CharField(max_length=50, blank = True)
 	pub_date = models.DateTimeField('date published')
 	responder = models.ForeignKey(User, related_name='response')
+	responder_unregistered = models.CharField(max_length=10, )
 	meeting = models.ForeignKey(Meeting,related_name='responses')
 	def __str__(self):
 		return self.choice
