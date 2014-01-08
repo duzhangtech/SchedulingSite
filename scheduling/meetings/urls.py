@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from meetings import views
 
 urlpatterns = patterns('',
-    #url(r'^createMtn/$', views.create, name='create'),
+    url(r'^createMtn/$', views.createMtn, name='createMtn'),
     url(r'^create/$', views.create, name='create'),
     url(r'^createSuccess/$', views.createSuccess, name='createSuccess'),
     # url(r'^meeting_creation_success/$', views.meeting_creation_success, name='meeting_creation_success'),

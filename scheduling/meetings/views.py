@@ -13,7 +13,6 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from meetings.models import Meeting, Respond
-from meetings.forms import MtnCreationForm
 import json
 # Define the date row
 def unzipEmails(value):
@@ -133,42 +132,27 @@ def createMtn (request):
 
 def create(request):
     # the raw value for result
-    a = {}
-    a.update(csrf(request))
-    a['user'] = request.user
-    a['clock'] = clock
-    a['date'] = display
-    a['datesForData'] = datesForData
-    a['list_organized'] = request.user.meetings_organized.all()
-    a['list_invited'] = request.user.meetings_invited.all()
-    if request.method == 'POST':
-    	length = len(request.POST['proposed'])/16
-    	form = MtnCreationForm(request.POST)
-    	if form.is_valid():
-    		new_meeting_object = Meeting(result = ''.join(map(str, [k for k in range(0,length)])), meeting_id = index_generator(), description = form.cleaned_data['description'], proposed = request.POST['proposed'], name = form.cleaned_data['name'], pub_date = timezone.now(), organizer = request.user, 
-    		)
-    		new_meeting_object.save()
-    		if request.POST.get('visibility') == 'True':
-        		new_meeting_object.visibility = True;
-        		new_meeting_object.save()
-        	share = [] = form.clean['share'] # get the multiple emails
-    		for address in share:
-    			try: 
-    				try:
-    					u = User.objects.get(email = address)
-    				except ObjectDoesNotExist:
-    					u = User.objects.get(email = address)
-    				new_meeting_object.invited.add(u)
-    			except ObjectDoesNotExist:
-    				pass 
-    		request.session['meeting_name'] = new_meeting_object.name
-    		request.session['meeting_id'] = new_meeting_object.meeting_id
-    	return HttpResponseRedirect('/loggedin/create/')
-    else:
-    	a['form'] = MtnCreationForm()
-
-    return render_to_response("meetings/createMtn.html", a)
-
+    length = len(request.POST.get('proposed'))/16
+    new_meeting_object = Meeting(result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=index_generator(), description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
+    new_meeting_object.save()
+    if request.POST.get('visibility') == 'True':
+        new_meeting_object.visibility = True;
+        new_meeting_object.save()
+    share = unzipEmails(request.POST.get('share')) # get the multiple emails
+    for address in share:
+    	try: 
+    		u = User.objects.get(email = address)
+    		new_meeting_object.invited.add(u)
+    	except ObjectDoesNotExist:
+            try:
+                u = User.objects.get(username = address)
+                new_meeting_object.invited.add(u)
+            except ObjectDoesNotExist:
+    			pass
+    	new_meeting_object.save()
+    request.session['meeting_name'] = new_meeting_object.name
+    request.session['meeting_id'] = new_meeting_object.meeting_id
+    return HttpResponseRedirect('/loggedin/createSuccess/')
 
 def createSuccess(request):
     b = a
@@ -242,6 +226,7 @@ def updateMtn(request, meeting_id):
     a['length'] = len(a['data'])/3
     a['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
     a['amountOfAvail'] = [x for x in range(0, a['length'])]
+    a['alreadyInvited'] = ', '.join(x.email for x in meeting.invited.all())
     if meeting.visibility == True:
         a['visibility'] = 'checked'
     else:
@@ -258,12 +243,19 @@ def update(request, meeting_id):
     else:
         meeting.visibility = False
     meeting.save()
-    for i in range(1, 6):
-        form_in = request.POST['invited_' + str(i)]
-        if form_in != '':
-            u = User.objects.get(username=form_in)
-            meeting.invited.add(u)
-    meeting.save()
+    share = unzipEmails(request.POST.get('share')) # get the multiple emails
+    meeting.invited.clear()
+    for address in share:
+    	try: 
+    		u = User.objects.get(email = address)
+    		meeting.invited.add(u)
+    	except ObjectDoesNotExist:
+            try:
+                u = User.objects.get(username = address)
+                meeting.invited.add(u)
+            except ObjectDoesNotExist:
+    			pass
+    	meeting.save()
 
     return HttpResponseRedirect('/loggedin/organized/%s/' % meeting.meeting_id)
 

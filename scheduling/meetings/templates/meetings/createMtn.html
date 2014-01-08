@@ -5,7 +5,16 @@
 {% block content%}
 <div id = "formWrapper">
 <form action="{% url 'meetings:create' %}" method="POST">{% csrf_token %}
-    {{ form }}
+    <div id="formLocator1">
+    <h3>Please type the name of your meeting</h3>
+    <input type="textarea" name="meeting_name" />
+    </div>
+    <div id="formLocator2">
+    <h3>description</h3>
+    <input id="formDescription" type="textarea" name="meeting_description" />
+    </div>
+    <h3>Please type the username of those you would like to invite, separate by commas</h3>
+    <input type="textarea" id="shareTextarea" name="share" />
     <input type="hidden" value="" id="dataStorage"name= "proposed">
 <!---->
 <br/>
