@@ -437,9 +437,19 @@ $(document).mousemove( function(e) {
         }   
     }
     //subtract the initial benchmark
-    nearestY_new = nearestY_new - initTopPosition;  
-// TEST--------------------$('#col_1').after("<div style='position: absolute; font-size:5em;'>"+nearestY+"</div>");
-   $('#slot_'+counter+'').css({"height":""+nearestY_new+"%"})
+    nearestY_new = nearestY_new - initTopPosition;
+//test
+//$('#aaa').remove(); 
+//$('#col_1').after("<div id = 'aaa'style='position: absolute; font-size:5em;'>"+nearestY_new+"</div>");
+ 
+if(nearestY_new > 0){
+  $('#slot_'+counter+'').css({"height":""+nearestY_new+"%"});
+ }
+ else{
+  var nearestY_top = initTopPosition + nearestY_new;
+  $('#slot_'+counter+'').css({"top":""+nearestY_top+"%"});
+  $('#slot_'+counter+'').css({"height":""+(-nearestY_new)+"%"});
+ }
 });  
 
 
@@ -499,7 +509,7 @@ $(document).mousemove( function(e) {
     //$('#formDescription').val(topForData2+'----'+bottomForData);
     topForData2 = processMessageTime(Math.round((topForData/containerHeight)/0.024378));
 
-    $("#dataCarrier_"+include[w]+"").html(""+topForData2+"-"+bottomForData+"<a class='trashcan' href='#'><img style='width:1em;height:1em;' src={% static 'meetings/image/trashcan.png' %} /></a>");
+    $("#dataCarrier_"+include[w]+"").html(""+topForData2+"-"+bottomForData+"<a class='trashcan' href='#'>&#215;</a>");
 
   };
 //1-3-2014 unbind() stops multiple firing

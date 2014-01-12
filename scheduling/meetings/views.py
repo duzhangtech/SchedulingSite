@@ -13,15 +13,24 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from meetings.models import Meeting, Respond
+from scheduling.forms import MyRegistrationForm
 import json
 # Define the date row
 def unzipEmails(value):
     if value in EMPTY_VALUES:
         return []
+    value = value.replace('$', ',')
     value = value.replace(',', ';')
     value = [item.strip() for item in value.split(';') if item.strip()]
 
     return list(set(value))
+
+def invitedEmailList(value):
+    value = '$'.join(unzipEmails(value))
+    length = value.count("$") + 1
+    
+    return str(length) + value
+
 def giveDate(num):
     if num == 0: return 'Sunday'
     if num == 1: return 'Monday'
@@ -72,6 +81,7 @@ def singleProcessor(string):
         k = k + 2*(int(string[0:2]) - 5)
 
     return k
+
 def dateProcessor(timestring):
     #conver string to datetime object
     a = strptime(timestring, "%m%d%Y")
@@ -79,6 +89,7 @@ def dateProcessor(timestring):
     a = a - datetime.today()
     a = a.days
     return a + 2
+
 def processor(proposed): #takeproposed raw data, return the dates in format
     tempStorage = []
     num = len(proposed)/16
@@ -133,12 +144,13 @@ def createMtn (request):
 def create(request):
     # the raw value for result
     length = len(request.POST.get('proposed'))/16
-    new_meeting_object = Meeting(result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=index_generator(), description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
+    inviteData = request.POST.get("share")
+    new_meeting_object = Meeting(invitedList = invitedEmailList(inviteData), result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=index_generator(), description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
     new_meeting_object.save()
     if request.POST.get('visibility') == 'True':
         new_meeting_object.visibility = True;
         new_meeting_object.save()
-    share = unzipEmails(request.POST.get('share')) # get the multiple emails
+    share = unzipEmails(inviteData) # get the multiple emails
     for address in share:
     	try: 
     		u = User.objects.get(email = address)
@@ -180,28 +192,56 @@ def MtnOrganized(request, meeting_id):
     b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
     b['infoOnTop'] = organizerPageProcessor(meeting.proposed)
     b['amountOfAvail'] = [x for x in range(0, b['length'])]
+    b['listOfEmail'] = '<ul style = "display:none; " id = "viewFullList">'
+    for name in unzipEmails(meeting.invitedList[1::]):
+    	b['listOfEmail'] = b['listOfEmail'] + "<li>" + name + "</li>"
+    b['listOfEmail'] = b['listOfEmail'] + "<li><a id = 'addMoreInvitees' href = 'update/' >+</a></li>" + '</ul>'
+    responsesCount = str(meeting.responses.count())
+    if responsesCount in EMPTY_VALUES:
+    	responsesCount = '0'
+    b['replyCondition'] =  responsesCount + "/" + meeting.invitedList[:1] + " of your invitees have replied"
 #processing for responses--------------
     k = '<td>&#32</td>'
 #first row
-    for response in meeting.responses.all():
-    	try:
-        	k = k + '<td>'+response.responder.username+'</td>'
-    	except AttributeError:
-    		k = k + '<td>'+response.responder_unregistered+'</td>'
-    k = '<tr>'+k+'</tr>'
+    responders = meeting.responses.all()
+    w = [e.responder.username for e in responders]
+    invitees = meeting.invited.all()
+    for invitee in w:
+    	k = k + '<td class ="Answered" >'+invitee+'</td>'
+    for invitee in invitees:
+    	if invitee.username not in w:
+    		k = k + '<td class ="unAnswered">'+invitee.username+'</td>'
+    k = '<tr>'+k+'</tr>'	
 #other rows
-    counter = 0 
+    counter = -1 
+    availStorage = []
     for num in organizerPageProcessor(meeting.proposed):
-        k = k + '<tr>'
-        k = k + '<td>'+ num +'</td>'
-        for x in range(0, meeting.responses.count()):
-            thisResponder = Respond.objects.filter(meeting = meeting)[x]
-            if str(counter) in thisResponder.choice:
-                k = k + '<td class = "availChoice">&#10003</td>'
-            else:
-                k = k + '<td class = "unavailChoice">&#10007</td>'
         counter = counter + 1
-        k = k + '</tr>'
+        k = k + '<tr>'
+        k = k + '<td id ='+ '"meeting' + str(counter) + '">'+ num +'</td>'
+        avail = 0.00
+        for x in range(0, meeting.invited.count()):
+            try:
+            	thisResponder = Respond.objects.filter(meeting = meeting)[x]
+            	if str(counter) in thisResponder.choice:
+                	k = k + '<td class = "availChoice""choiceBG">&#10003</td>'
+            		avail = avail + 1
+            	else:
+                	k = k + '<td class = "unavailChoice""choiceBG">&#10007</td>'
+            except IndexError:
+                k = k +'<td class = "choiceBG"></td>'
+        if responsesCount != '0':  
+	        avail = round(avail*100/float(responsesCount), 1)
+        	availStorage.append(avail)
+        	k = k + '<td>' + str(avail) + '%</td>' +'</tr>'
+#calculate the recommended meeting(s)
+    biggest = 0
+    for num in availStorage:
+    	if num > biggest:
+    		biggest = num
+    for (index, num) in enumerate(availStorage):
+    	if num == biggest:
+    		k = k.replace('meeting'+ str(index) +'"', 'meeting'+ str(index) +'"'+'class = "best"')
     k= '<table>' + k +'</table>'
     b['table'] = k
     return render_to_response('meetings/meeting_organized.html', b)
@@ -236,14 +276,15 @@ def updateMtn(request, meeting_id):
 def update(request, meeting_id):
     meeting = Meeting.objects.get(meeting_id = meeting_id,)
     length = len(request.POST['proposed'])/16
-    meeting = Meeting(pk = meeting.pk, result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=meeting.meeting_id, description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
+    inviteData = request.POST.get('share')
+    meeting = Meeting(invitedList = invitedEmailList(inviteData), pk = meeting.pk, result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=meeting.meeting_id, description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
     meeting.save()
     if request.POST.get('visibility') == 'True':
         meeting.visibility = True
     else:
         meeting.visibility = False
     meeting.save()
-    share = unzipEmails(request.POST.get('share')) # get the multiple emails
+    share = unzipEmails(inviteData) # get the multiple emails
     meeting.invited.clear()
     for address in share:
     	try: 
@@ -255,7 +296,14 @@ def update(request, meeting_id):
                 meeting.invited.add(u)
             except ObjectDoesNotExist:
     			pass
-    	meeting.save()
+        meeting.save()
+   	#delete the responses from deleted invitees
+    responders = meeting.responses.all()
+    w = [e.responder for e in responders]
+    invitees = meeting.invited.all()
+    for responder in w:
+   		if responder not in invitees:
+   			meeting.responses.filter(responder = responder,).delete()
 
     return HttpResponseRedirect('/loggedin/organized/%s/' % meeting.meeting_id)
 
@@ -265,6 +313,7 @@ def MtnInvited(request, meeting_id):
     b.update(csrf(request))
     b['clock'] = clock
     b['date'] = display
+    b['form'] = MyRegistrationForm()
     b['datesForData'] = datesForData
     b['meeting'] = meeting
     if not request.user.is_anonymous():
@@ -291,12 +340,14 @@ def MtnInvited(request, meeting_id):
         except ObjectDoesNotExist:
             return render_to_response('meetings/meeting_invited.html', b)
     else:
-        b['guest'] = True;
+        b['guest'] = "true";
         return render_to_response('meetings/meeting_invited.html', b)
 def respond(request, meeting_id):
     meeting = Meeting.objects.get(meeting_id = meeting_id)
     b = {}
     b.update(csrf(request))
+    b['data'] = processor(meeting.proposed)  
+    b['length'] = len(b['data'])/3
     b['meeting'] = meeting    
     b['amountOfAvail'] = [x for x in range(0, b['length'])]
     b['responded'] = "You have selected"

@@ -12,6 +12,7 @@ class Meeting (models.Model):
 	invited = models.ManyToManyField(User, related_name='meetings_invited')
 	meeting_id = models.CharField(max_length = 7)
 	result = models.CharField(max_length = 20)
+	invitedList = models.CharField(max_length = 1000)
 	pub_date = models.DateTimeField('date published')
 	visibility = models.BooleanField(default = False)
 	def __str__(self):

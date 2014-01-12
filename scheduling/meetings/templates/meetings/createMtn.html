@@ -366,20 +366,29 @@ column_init(1);
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&xcontinue CORE&&&&&&&&&&&&&&7
 $(document).mousemove( function(e) {
 
-   mouseX = e.pageX; 
-   mouseY = CalTopY+(e.pageY-8)/10;   //  % conversion
+   mouseY = CalTopY + (e.pageY - 8)/10;   //  % conversion
    //calculate the nearest benchmark
-   var nearestY_new= gridY[0];
-    for(var i=0;i<39;i++){
-        if(gridY[i]>mouseY){
+   var nearestY_new = gridY[0];
+    for(var i = 0; i < 39; i++){
+        if(gridY[i] > mouseY){
           nearestY_new = gridY[i];
             break;
         }   
     }
     //subtract the initial benchmark
-    nearestY_new = nearestY_new - initTopPosition;  
-// TEST--------------------$('#col_1').after("<div style='position: absolute; font-size:5em;'>"+nearestY+"</div>");
-   $('#slot_'+counter+'').css({"height":""+nearestY_new+"%"})
+    nearestY_new = nearestY_new - initTopPosition;
+//test
+//$('#aaa').remove(); 
+//$('#col_1').after("<div id = 'aaa'style='position: absolute; font-size:5em;'>"+nearestY_new+"</div>");
+ 
+if(nearestY_new > 0){
+  $('#slot_'+counter+'').css({"height":""+nearestY_new+"%"});
+ }
+ else{
+  var nearestY_top = initTopPosition - 1 + nearestY_new;
+  $('#slot_'+counter+'').css({"top":""+nearestY_top+"%"});
+  $('#slot_'+counter+'').css({"height":""+ (2.4390 - nearestY_new) +"%"});
+ }
 });  
 
 
@@ -388,6 +397,7 @@ $(document).mouseup( function(e) {
 //$("#col_2").before("<div>"+processData[1]+"</div>");
     $('#dataCarrier_'+counter+'').css("display","");
 //1-3-2013   make sure that the slot exists and it does not exist in the array
+
     if($("#slot_"+counter+"_finalize").attr('id') == "slot_"+counter+"_finalize"&& jQuery.inArray(counter , include) === -1){
       include.push(counter);
     };
@@ -439,7 +449,8 @@ $(document).mousemove( function(e) {
     topForData2 = processMessageTime(Math.round((topForData/containerHeight)/0.024378));
 
     $("#dataCarrier_"+include[w]+"").html(""+topForData2+"-"+bottomForData+"<a class='trashcan' href='#'>&#215;</a>");
-
+//$('#aaa').remove(); 
+//$('#col_1').after("<div id = 'aaa'style='position: absolute; font-size:5em;'>"+topForData2+"|"+bottomForData+"</div>");
   };
 
 $('.trashcan').unbind().click(function(){

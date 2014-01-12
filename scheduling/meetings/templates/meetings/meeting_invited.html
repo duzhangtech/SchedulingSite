@@ -1,11 +1,43 @@
 {%extends "loggedin.html"%}
-{% if guest%}
 {% block sidebar%}
+{% if guest == 'true' %}
 	<p style="left: 20%; max-width: 50%; position: absolute; top:15%;">You don't have a sidebar because you have not registered</p>
-	<a style="position: absolute; left: 20%; top:28%;" href="/">create a sweet account</a>		
-{% endblock%}
+	<a style="position: absolute; left: 20%; top:28%;" href="#" onclick="createAcct();">create a sweet account</a>		
+{% else %}
+    <ul>
+      <li><a href="/loggedin/">{{user}}</a> {# is there a way to let the generic template access this full name?#}
+      <li><a id="sideBarOrganized" href="">meetings you organized</a>
+{% if list_organized %} 
+  {% for meeting in list_organized %}
+    <li class="organizedMeetingList"><a href="/loggedin/organized/{{meeting.meeting_id}}">{{ meeting.name }}</a></li>
+  {% endfor %}
+{% else %}
+  <p>No meeting is available.</p>
 {% endif %}
+      <li><a id="sideBarInvited" href="">meetings you are invited to</a>
+{% if list_invited %} 
+  {% for meeting in list_invited %}
+    <li class="invitedMeetingList"><a href="/loggedin/invited/{{meeting.meeting_id}}">{{ meeting.name }}</a></li>
+  {% endfor %}
+{% else %}
+  <p>No meeting is available.</p>
+{% endif %}
+      <li><a href="{% url 'loggedin' %}createMtn/">organize new meeting</a>
+      <li><a href="/logout/">logout</a>
+    </ul>
+{% endif %}
+{% endblock%} <!--Above is the sidebar of invited page-->
 {% block content%}
+<div id="createAcct"> <!-- registration form-->
+{% for field in form %}
+  {{field.error}}
+{% endfor %}
+
+<form action="/register/" method="POST">{% csrf_token %}
+  {{form}}
+  <input type="submit" value="Register" />
+</form>
+</div>
   <h1>{{meeting.name}}</h1>
   <h3>organized by {{meeting.organizer}}</h3>
   <h4>{{meeting.pub_date}}</h4>
@@ -63,6 +95,19 @@
 <!--JQEURY************************************************************************
 **********************************************************************************-->
   <script type="text/javascript"> // visualize the Y grid
+var createAcctPop = 0;
+var createAcct = function(){
+  if(createAcctPop == 0){
+  $('#createAcctCover').fadeIn('fast');
+  $("#createAcct").fadeIn('fast');
+  createAcctPop = 1;
+  }
+}
+var removeAcct = function(){
+  $('#createAcctCover').hide();
+  $('#createAcct').hide();
+  createAcctPop = 0;
+}
   var num=2.439024;
   for(var i=0; i<41; i++){  
   var k = num * i;
@@ -134,8 +179,8 @@ for(var ee =0; ee<length;ee++){
 	data[0+3*ee] = $("#data_"+(1+3*ee)+"").html();
 	data[1+3*ee] = $("#data_"+(2+3*ee)+"").html();
 	data[1+3*ee] = parseInt(data[1+3*ee]) - parseInt(data[0+3*ee]);
-    data[2+3*ee] = parseSeven($("#data_"+(3+3*ee)+"").html());
-    scopeStorage[ee] = Math.floor(parseInt($("#data_"+(3+3*ee)+"").html())/7);
+  data[2+3*ee] = parseSeven($("#data_"+(3+3*ee)+"").html());
+  scopeStorage[ee] = Math.floor(parseInt($("#data_"+(3+3*ee)+"").html())/7);
 	specific[0+3*ee] = $("#specific_"+(1+3*ee)+"").html();
 	specific[1+3*ee] = $("#specific_"+(2+3*ee)+"").html();
 	specific[2+3*ee] = $("#specific_"+(3+3*ee)+"").html();
@@ -145,7 +190,8 @@ $("#container").after("<div class='avail_time scope"+scopeStorage[ee]+"' id='ava
 $('#avail_'+ee+'').html("<div class='dataCarrier' id='dataDisplayer_"+ee+"'>"+specific[k+0]+specific[k+1]+specific[k+2]+"</div>");
 
 if(scopeStorage[ee] != 0 ){
-  $("#avail_"+ee).hide();
+  $("#avail_"+ee).hide(); 
+  $("#scopeRight").addClass('greenWrap');
 }
 };
 
@@ -317,6 +363,9 @@ $('#scopeRight').unbind().click(function(){
   $('.scope'+scope).fadeOut('fast');
   scope = scope + 1;
   $('.scope'+scope).fadeIn('fast');
+  if(scope == Math.max.apply(Math, scopeStorage)){
+    $('#scopeRight').removeClass('greenWrap');
+  }
 });
 $('#scopeLeft').unbind().click(function(){
   if(scope > 0){
@@ -330,6 +379,9 @@ $('#scopeLeft').unbind().click(function(){
   $('.scope'+scope).fadeOut('fast');
   scope = scope - 1; 
   $('.scope'+scope).fadeIn('fast');
+  if(scope < Math.max.apply(Math, scopeStorage)){
+    $('#scopeRight').addClass('greenWrap');
+    }
   }
 });
 //hover effect
