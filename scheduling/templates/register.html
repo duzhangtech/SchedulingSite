@@ -1,10 +1,19 @@
-<h2>Register</h2>
-
+{% extends "index.html"%}
+{% block content %}
 {% for field in form %}
 	{{field.error}}
 {% endfor %}
+{% load crispy_forms_tags %}
 
-<form action="/register/" method="POST">{% csrf_token %}
-	{{form}}
-	<input type="submit" value="Register" />
-</form>
+<div class="row">
+ <div class="col-md-4">	
+	<form action="/register/" method="POST">{% csrf_token %}
+		{{form|crispy}}
+		<input type="submit" class="btn btn-success" style="margin-left:25%; width: 50%;" value="注册" />
+	</form>
+  </div>
+</div>
+<script type="text/javascript">
+	$("#hint_id_password2").hide();
+</script>
+{% endblock %}

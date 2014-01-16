@@ -1,9 +1,15 @@
+# -*- coding: utf-8 -*- 
 from django import forms
 import re
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import EMPTY_VALUES
 from django.forms.fields import Field
+my_default_errors = {
+    'required': '这个格子是必填的',
+    'invalid': 'Enter a valid value',
+}
+
 def unzipEmails(value):
     if value in EMPTY_VALUES:
         return []
@@ -35,15 +41,15 @@ class CommaSeparatedEmailField(Field):
         value = self.to_python(value)
 
         if value in EMPTY_VALUES and self.required:
-            raise forms.ValidationError(_(u"This field is required."))
+            raise forms.ValidationError(_(u"会议总得有个名称吧"))
 
         for email in value:
-            if not re.match('\b[\w.-]+@[\w.-]+.\w{2,5}\b', email):
-                raise forms.ValidationError(_(u"'%s' is not a valid "
-                                              "e-mail address.") % email)
+            if not re.match('[a-zA-Z0-9-]{1,}@([a-zA-Z0-9\.])?[a-zA-Z0-9]{1,}\.[a-zA-Z0-9]{1,4}', str(email)):
+                raise forms.ValidationError(_(u"'%s' 不是一个有效的邮箱地址，请重新输入！") % email)
         return value
 
 class MtnCreationForm(forms.Form):
-	name = forms.CharField(required = True, max_length = 20, help_text = 'Name of the meeting',)
-	description = forms.CharField(required = False, max_length = 100, )
-	share = CommaSeparatedEmailField()
+    name = forms.CharField(label="会议名称", required = True, max_length = 20, error_messages = my_default_errors,)
+    location = forms.CharField(label="会议地点", required = False, max_length = 20, error_messages = my_default_errors,)    
+    description = forms.CharField(label="会议描述", required = False, max_length = 100, )
+    share = CommaSeparatedEmailField(label="邀请", error_messages = my_default_errors,)

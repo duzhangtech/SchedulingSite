@@ -1,35 +1,61 @@
 {%extends "loggedin.html"%}
 {% load static %}
+{% load crispy_forms_tags %}
+
 <body>
 
 {% block content%}
-<div id = "formWrapper">
-<form action="{% url 'meetings:create' %}" method="POST">{% csrf_token %}
-    <div id="formLocator1">
-    <h3>Please type the name of your meeting</h3>
-    <input type="textarea" name="meeting_name" />
-    </div>
-    <div id="formLocator2">
-    <h3>description</h3>
-    <input id="formDescription" type="textarea" name="meeting_description" />
-    </div>
-    <h3>Please type the username of those you would like to invite, separate by commas</h3>
-    <input type="textarea" id="shareTextarea" name="share" />
-    <input type="hidden" value="" id="dataStorage"name= "proposed">
-<!---->
-<br/>
-  <label for='visibility'>Want others to see?</label>
-  <input type='checkbox' value='True' name='visibility'/>
-  <input type="submit" class="submit" value="submit" id="submit"/>
+<div class="row" style="margin-top: -5px">
+  <div class="col-md-10">
+<div id="progressBar" class="progress">
+  <div  id="progressAnimation" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 1%">  </div>
+  </div>
+</div>
+</div>
+  <div id="createPageFirst">
+<div class="row" style="margin-top: 8%;">
+  <div class="col-md-offset-2 col-md-6">
+{% for field in form %}
+  {{field.error}}
+{% endfor %}
+
+<form id="createForm" action="/loggedin/create/" method="POST"><input type="hidden" name="csrfmiddlewaretoken" value="GujxWgRkj7SFSXV5y2T2fnVJsxD5jl5B">
+
+
+<div id="div_id_name_jia" class="form-group"><label for="id_name" class="control-label  requiredField">
+        会议名称<span class="asteriskField">*</span></label><div class="controls "><input class="textinput textInput form-control" id="name" maxlength="20" name="name" type="text"> </div></div><div id="div_id_location_jia" class="form-group"><label for="id_location" class="control-label ">
+        会议地点
+      </label><div class="controls "><input class="textinput textInput form-control" id="location" maxlength="20" name="location" type="text"> </div></div><div id="div_id_description_jia" class="form-group"><label for="id_description" class="control-label ">
+        会议描述
+      </label><div class="controls "><input class="textinput textInput form-control" id="description" maxlength="100" name="description" type="text"> </div></div>
+
+<div class="form-group">
+<div class="row">
+  <div class="col-md-10">
+    <h5>其他选项</h5>
+  </div>
+
+</div>
+<input class="" type="checkbox" id="id_visibility" value="True" name="visibility">
+<label for="visibility">你是否想要被邀请者看到其他被邀请者?</label>
+</div>
 </form>
-</div> <!--the end of formWrapper-->
+  <div class="col-md-offset-8">
+    <button style="margin-top: -50px;" class="btn btn-info pull-right" id="nextStep">下一步：选择时间</button>
+  </div>
+  </div>
+</div>
+</div>
+
+<div id="createPageSecond" style="display:none; ">
+  <button id="nextStep2" class="btn btn-info">下一步：分享</button>
 <div id="scheduleUIwrapper">
 <div id='scrollWindow'>
  
   <div id="CalWrapper">
  <div id="clockWrapper">
   {% for time in clock %}
-  <h3 id ="clockTime">{{ time }}</h3><br/> 
+  <h5 id ="clockTime">{{ time }}</h5><br/> 
   {% endfor %}
   </div><!--end of clockWrapper-->
   <div id="container">
@@ -47,22 +73,35 @@
 <div id="dateWrapper">
 <a href='#' id='scopeLeft'>last</a>
 {% for day in date %}
-<h3 class="dateSpacer" id="dateSpacer_{{forloop.counter}}">{{ day }}</h3>
+<h5 class="dateSpacer text-center" id="dateSpacer_{{forloop.counter}}">{{ day }}</h5>
 {% endfor %}<!--header-->
 {% for day in datesForData %}
-<h3 class="datesForData" id="datesForData_{{forloop.counter}}">{{ day|date:"SHORT_DATE_FORMAT" }}</h3>
+<h5 class="datesForData text-center" id="datesForData_{{forloop.counter}}">{{ day|date:"SHORT_DATE_FORMAT" }}</h5>
 {% endfor %}<!--header-->
 <a href="#" id="scopeRight">next</a>
 </div><!--end of dateWrapper-->
-
-
 </div><!--end of scheduleUIWrapper-->
+</div>
 
+<div id="createPageThird" style="display:none;">
+<form action="/loggedin/create/" method="POST">{% csrf_token %}
+  <div class="row">
+    <div class="col-md-10">
+{{ form|crispy }}
+</div>
+</div>
+<p>请输入你想邀请的人的邮箱，用逗号隔开</p>
+<input class="" id="visibility"style="display:none;" type='checkbox' value='True' name='visibility'/>
 
-
+<input type="hidden" id="dataStorage"name= "proposed">
+<button id="submit" class="btn btn-success" type="submit" name="submit">创建会议</button>
+</form>
+</div>
 <!--JQEURY************************************************************************
 **********************************************************************************-->
   <script type="text/javascript"> // visualize the Y grid
+
+
   var num=2.439024;
   for(var i=0; i<41; i++){  
   var k = num * i;
@@ -106,6 +145,7 @@
     var messageDate;
   var left_mark = 0;
   var initX = new Array();
+  var ratio = 17.328125/2.439024;
 for(var i = 0; i < 41; i++){
     gridY[i] = 2.439024 * i; // generate the horizontal grid on the div
 }
@@ -115,7 +155,7 @@ for(var i=1; i <8;i++){
   initX[i] = 0.4+left_mark*0.9999;
 };
 //set the default scroll value
-$('#scrollWindow').scrollTop( 195 );
+$('#scrollWindow').scrollTop( 167 );
 //set the new algorithm for scroll------ caltopY = base value(generated by user) + caltop Y updated when scrolling
 var CalTopY_scroll = 195;
 var CalTopY = CalTopY_scroll/10 + CalTopY_base;
@@ -385,7 +425,7 @@ if(nearestY_new > 0){
   $('#slot_'+counter+'').css({"height":""+nearestY_new+"%"});
  }
  else{
-  var nearestY_top = initTopPosition - 1 + nearestY_new;
+  var nearestY_top = initTopPosition + nearestY_new;
   $('#slot_'+counter+'').css({"top":""+nearestY_top+"%"});
   $('#slot_'+counter+'').css({"height":""+ (2.4390 - nearestY_new) +"%"});
  }
@@ -465,6 +505,14 @@ $('.trashcan').unbind().click(function(){
 var processData = new Array();
 
 $("#submit").click(function(e){
+//transfer the data:
+
+$("#id_name").val($("#name").val());
+$("#id_description").val($("#description").val());
+$("#id_location").val($("#location").val());
+$("#id_visibility").val($("#visibility").val());
+
+
   for(var cc=0; cc < include.length; cc++){
 // replace : and '' and get rid of the trashcan image symbol 12.31.2013
     processData[cc] = $("#dataCarrier_"+include[cc]+"").html().replace(/[^\d.]/g, "").slice(0, 8) + $("#dataCarrier_date_"+include[cc]+"").html().replace(/[^\d.]/g, "");
@@ -476,9 +524,46 @@ $("#submit").click(function(e){
   $("#dataStorage").val(proposed);
 });
 
-
+$("#nextStep").click(function(){
+if($("#name").val() == ""){
+  $("#div_id_name_jia").addClass("has-error");
+  $("#name").after('<p id="error_1_id_email" class="help-block"><strong>请填写会议名称！</strong></p>');
+}
+  else{
+  $("#createPageFirst").fadeOut("fast");
+  $("#progressAnimation").css("width","34%");
+  $("#createPageSecond").fadeIn("fast");
+}
+});
+$("#nextStep2").click(function(){
+if($("#name").val() == ""){
+}
+  else{
+  $("#createPageSecond").fadeOut("fast");
+  $("#progressAnimation").css("width", "100%");
+  $("#createPageThird").fadeIn("fast");
+  $("#div_id_name").hide();
+  $("#div_id_description").hide();
+  $("#div_id_location").hide();
+  $("#submit").fadeIn("fast");
+}
+});
 //merge the messages
-
+$(document).ready(function(){
+  if($("#error_1_id_share").html() == "<strong>'a' 不是一个有效的邮箱地址，请重新输入！</strong>" ){
+  $("#progressAnimation").css("width","100%")
+  $("#createPageFirst").hide();
+  $("#div_id_name").hide();
+  $("#div_id_description").hide();
+  $("#div_id_location").hide();
+  $("#submit").fadeIn("fast");
+  $("#createPageThird").fadeIn("fast");
+}
+else{
+    $("#createPageFirst").hide();
+    $("#createPageFirst").fadeIn("fast");
+}
+});
 </script>
 
 {%endblock%}

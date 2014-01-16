@@ -74,10 +74,10 @@
     position: relative;
 }
 #scheduleUIwrapper{
-    position: relative;
-    width:80%;
-    top: 25%;
-    height: 100%;
+    position: absolute;
+    width:70em;
+    top: 120%;
+    height: 40em;
 }
 #dateWrapper{
     position: absolute;
@@ -139,16 +139,16 @@
     left:5%;
     top: 7%;
     width: 110%;
-    height:60%;
+    height:80%;
     overflow: auto;
 }
 #clockWrapper{
     position: absolute;
-    top:-2.5%;
-    left:-6%;
+    top:-1.5%;
+    left:-7%;
 }
 #clockTime{
-    margin-bottom: 83%;
+    margin-bottom: 95%;
     text-align: right;
 }
 #CalWrapper{
@@ -160,26 +160,6 @@
     left: 6%;
     top: 1%;
     font-size: 1em;
-}
-#formLocator1{
-    position: absolute;
-    width: 50%;
-    top: -40%;
-}
-#formLocator1:first-child{
-    width: 130%;
-}
-#formLocator2{
-    position: absolute;
-    width: 50%;
-    top: -40%;
-    left: 40%;
-}
-#formDescription{
-    width: 100%;
-}
-#shareTextarea{
-    width: 90%;
 }
 #formWrapper{
     position: absolute;
@@ -193,32 +173,32 @@
     z-index: 500;
     width: 100%;
     height: 1px;
-    background-color: #eeeeee;
+    background-color: #bbb;
     position: absolute;
 }
 .lines_row{
     z-index: 501;
     width: 1px;
     height: 98%;
-    background-color: #eeeeee;
+    background-color: #bbb;
     position: absolute;
 }
 .bold_lines{
     z-index: 1000;
     width: 100%;
     height: 2px;
-    background-color: #dddddd;
+    background-color: #888;
     position: absolute;
 }
 
 /*invite page*/
 #scheduleUIwrapperInvite{
-    position: relative;
-    width:80%;
-    top: 5%;
-    height: 100%;
+    position: absolute;
+    width:50em;
+    top: 120%;
+    height: 40em;
 }
-#createAcct{
+/*#createAcct{
     position: absolute;
     width: 40%;
     height: 40%;
@@ -238,8 +218,9 @@
     opacity: 0.6;
 }
 .greenWrap{
-    border: 1px solid lightgreen;
-    border-spacing: 50%;
+        border: 1px solid lightgreen;
+        border-spacing: 50%;
+        border-radius: 5px;
 }
 /*organize page*/
 .availChoice{

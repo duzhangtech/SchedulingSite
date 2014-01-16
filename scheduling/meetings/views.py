@@ -1,4 +1,4 @@
-#Stdlib imports
+# -*- coding: utf-8 -*- 
 import re
 import string
 import random
@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from meetings.models import Meeting, Respond
+from forms import MtnCreationForm
 from scheduling.forms import MyRegistrationForm
 import json
 # Define the date row
@@ -32,13 +33,13 @@ def invitedEmailList(value):
     return str(length) + value
 
 def giveDate(num):
-    if num == 0: return 'Sunday'
-    if num == 1: return 'Monday'
-    if num == 2: return 'Tuesday'
-    if num == 3: return 'Wednesday'
-    if num == 4: return 'Thursday'
-    if num == 5: return 'Friday'
-    if num == 6: return 'Saturday'
+    if num == 0: return '周日'
+    if num == 1: return '周一'
+    if num == 2: return '周二'
+    if num == 3: return '周三'
+    if num == 4: return '周四'
+    if num == 5: return '周五'
+    if num == 6: return '周六'
 today_date = date.today().weekday()
 global datesForData #Define the data processing needs
 datesForData = [date.today(), \
@@ -129,9 +130,50 @@ a['clock'] = clock
 a['date'] = display
 a['datesForData'] = datesForData
 
-def createMtn (request):
+#def createMtn (request):
+#    a = {}
+#    a.update(csrf(request))
+#    a['user'] = request.user
+#    a['clock'] = clock
+#    a['date'] = display
+#    a['datesForData'] = datesForData
+#    a['list_organized'] = request.user.meetings_organized.all()
+#    a['list_invited'] = request.user.meetings_invited.all()
+#    return render_to_response("meetings/createMtn.html", a)
+
+
+def create(request):
+    # the raw value for result
+    if request.method == "POST":
+        form = MtnCreationForm(request.POST)
+        if form.is_valid():
+            length = len(request.POST.get('proposed'))/16
+            inviteData = request.POST.get("share")
+            new_meeting_object = Meeting(invitedList = invitedEmailList(inviteData), result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=index_generator(), description=request.POST.get('description') ,location= request.POST.get('location'), proposed = request.POST.get('proposed'), name=request.POST.get('name'), pub_date=timezone.now(), organizer=request.user)
+            new_meeting_object.save()
+            if request.POST.get('visibility') == 'True':
+                new_meeting_object.visibility = True;
+                new_meeting_object.save()
+            share = unzipEmails(inviteData) # get the multiple emails
+            for address in share:
+                try: 
+                    u = User.objects.get(email = address)
+                    new_meeting_object.invited.add(u)
+                except ObjectDoesNotExist:
+                    try:
+                        u = User.objects.get(username = address)
+                        new_meeting_object.invited.add(u)
+                    except ObjectDoesNotExist:
+                        pass
+                new_meeting_object.save()
+            request.session['meeting_name'] = new_meeting_object.name
+            request.session['meeting_id'] = new_meeting_object.meeting_id
+            return HttpResponseRedirect('/loggedin/createSuccess/')
+    else:
+        form = MtnCreationForm()
     a = {}
     a.update(csrf(request))
+    a['form'] = form
     a['user'] = request.user
     a['clock'] = clock
     a['date'] = display
@@ -139,32 +181,6 @@ def createMtn (request):
     a['list_organized'] = request.user.meetings_organized.all()
     a['list_invited'] = request.user.meetings_invited.all()
     return render_to_response("meetings/createMtn.html", a)
-
-
-def create(request):
-    # the raw value for result
-    length = len(request.POST.get('proposed'))/16
-    inviteData = request.POST.get("share")
-    new_meeting_object = Meeting(invitedList = invitedEmailList(inviteData), result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=index_generator(), description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
-    new_meeting_object.save()
-    if request.POST.get('visibility') == 'True':
-        new_meeting_object.visibility = True;
-        new_meeting_object.save()
-    share = unzipEmails(inviteData) # get the multiple emails
-    for address in share:
-    	try: 
-    		u = User.objects.get(email = address)
-    		new_meeting_object.invited.add(u)
-    	except ObjectDoesNotExist:
-            try:
-                u = User.objects.get(username = address)
-                new_meeting_object.invited.add(u)
-            except ObjectDoesNotExist:
-    			pass
-    	new_meeting_object.save()
-    request.session['meeting_name'] = new_meeting_object.name
-    request.session['meeting_id'] = new_meeting_object.meeting_id
-    return HttpResponseRedirect('/loggedin/createSuccess/')
 
 def createSuccess(request):
     b = a
@@ -199,7 +215,7 @@ def MtnOrganized(request, meeting_id):
     responsesCount = str(meeting.responses.count())
     if responsesCount in EMPTY_VALUES:
     	responsesCount = '0'
-    b['replyCondition'] =  responsesCount + "/" + meeting.invitedList[:1] + " of your invitees have replied"
+    b['replyCondition'] =  responsesCount + "/" + meeting.invitedList[:1] + u" 位被邀请者已答复"
 #processing for responses--------------
     k = '<td>&#32</td>'
 #first row
@@ -277,7 +293,7 @@ def update(request, meeting_id):
     meeting = Meeting.objects.get(meeting_id = meeting_id,)
     length = len(request.POST['proposed'])/16
     inviteData = request.POST.get('share')
-    meeting = Meeting(invitedList = invitedEmailList(inviteData), pk = meeting.pk, result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=meeting.meeting_id, description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
+    meeting = Meeting(invitedList = invitedEmailList(inviteData), pk = meeting.pk, result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=meeting.meeting_id, location = request.POST.get('location'), description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
     meeting.save()
     if request.POST.get('visibility') == 'True':
         meeting.visibility = True
@@ -307,13 +323,40 @@ def update(request, meeting_id):
 
     return HttpResponseRedirect('/loggedin/organized/%s/' % meeting.meeting_id)
 
-def MtnInvited(request, meeting_id):
+def MtnInvited(request, meeting_id, validity = ''):
     meeting = Meeting.objects.get(meeting_id = meeting_id)
+    #update Meeting:
+    inviteData = meeting.invitedList
+    share = unzipEmails(inviteData) # get the multiple emails
+    for address in share:
+        try: 
+            u = User.objects.get(email = address)
+            meeting.invited.add(u)
+        except ObjectDoesNotExist:
+            try:
+                u = User.objects.get(username = address)
+                meeting.invited.add(u)
+            except ObjectDoesNotExist:
+                pass
+        meeting.save()
+
     b = {}
     b.update(csrf(request))
+    #when invalid log-in:
+    if validity == "invalid" or validity == "registered":
+        b['loginState'] = "true" 
+    else:
+        b['loginState'] = 'false'
+    if validity == "invalid":
+        b['loginError'] = "您的密码／用户名组合不正确，请重新输入！" 
+    if validity == "registered":
+        b['registerError'] = '您的账户已经被人注册啦'
     b['clock'] = clock
     b['date'] = display
-    b['form'] = MyRegistrationForm()
+    form = MyRegistrationForm()
+    form.fields['password1'].label = "密码"
+    form.fields['password2'].label = "再次输入密码"
+    b['form'] = form
     b['datesForData'] = datesForData
     b['meeting'] = meeting
     if not request.user.is_anonymous():
@@ -328,9 +371,9 @@ def MtnInvited(request, meeting_id):
     b['length'] = len(b['data'])/3
     b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
     b['amountOfAvail'] = [x for x in range(0, b['length'])]
-    othersInvited = 'others invited: '
+    othersInvited = '邀请人名单: '
     for other in meeting.invited.all():
-        othersInvited = othersInvited + '    ' +str(other)
+        othersInvited = othersInvited + str(other) + ", "
     if meeting.visibility == True:
         b['othersInvited'] = othersInvited
     if not request.user.is_anonymous():
@@ -342,6 +385,7 @@ def MtnInvited(request, meeting_id):
     else:
         b['guest'] = "true";
         return render_to_response('meetings/meeting_invited.html', b)
+
 def respond(request, meeting_id):
     meeting = Meeting.objects.get(meeting_id = meeting_id)
     b = {}
@@ -394,6 +438,7 @@ def responded(request, meeting_id):
     b['datesForData'] = datesForData
     b['meeting'] = meeting
     b['user'] = request.user
+    b['loginState'] = False
     b['list_organized'] = request.user.meetings_organized.all()
     b['list_invited'] = request.user.meetings_invited.all()     
     b['data'] = processor(meeting.proposed)  

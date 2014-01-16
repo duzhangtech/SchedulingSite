@@ -1,17 +1,29 @@
 {%extends "loggedin.html"%}
 
 {% block content%}
-  <h1>{{meeting.name}}</h1>
-  <a href='update/'>edit this meeting</a>
-  <h3>organized by {{meeting.organizer}}</h3>
-  <h4>{{meeting.pub_date}}</h4>
-  <h4>{{meeting.description}}</h4>
-  <h4>{{replyCondition}}&nbsp; <a href="#" onclick = "viewFullList()" > view full list</a></h4>
-  <h3>link to share</h3>
-  <h6>http://localhost:8000/loggedin/invited/{{ meeting.meeting_id }}/ </h6>
-  <form method="POST" action="delete/">{% csrf_token %}<input onclick ="return confirm('Are you sure to delete this meeting?')" value='delete this mtn' type='submit'></input></form>
+<div id = "wrapper">
+<div class="row">
+  <h1 class="col-md-4">{{meeting.name}}</h1>
+  <div class="col-md-4">
+  <div class="row" style="margin-top:23px;">
+   <form method="POST" action="update/">{% csrf_token %}<button class="btn btn-default" href='update/'>编辑</button></form><form method="POST" action="delete/">{% csrf_token %}   <button class="btn btn-warning" onclick ="return confirm('Are you sure to delete this meeting?')" value='' type='submit'>删除</button></form>
+</div></div>
+</div>
+<div class="row">
+  <h5 class="col-md-8">创建时间：{{meeting.pub_date}}</h5>
+</div>
+  <p><strong>会议描述</strong>：{{meeting.description}}</p>
+  <p><strong>会议地点</strong>：{{meeting.location}}</p>
+  <h5><strong>回复情况</strong>：{{replyCondition}}&nbsp; <a href="#" onclick = "viewFullList()" > 查看完整邀请者名单 </a></h5>
+  <br>
+
   {{ listOfEmail|safe }}
   {{ table|safe }}
+  <br>
+  <h3>与受邀者分享这个链接:</h3>
+  <h6>http://localhost:8000/loggedin/invited/{{ meeting.meeting_id }}/ </h6>
+
+<!-- data processing -->
   {% for num in data %}
  	<div style="display:none;"id="data_{{forloop.counter}}">{{num}}</div>
   {%endfor%}
@@ -21,7 +33,7 @@
   <div style="display:none;"id="lengthStorage">{{length}}</div>
   <div style="display:none;"id="resultStorage">{{meeting.result}}</div>
 
-
+</div><!--end of wrapper-->
 <!--JQEURY************************************************************************
 **********************************************************************************-->
   <script type="text/javascript"> // visualize the Y grid

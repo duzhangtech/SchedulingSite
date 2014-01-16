@@ -6,6 +6,7 @@ import datetime
 
 class Meeting (models.Model):
 	name = models.CharField(max_length = 20)
+	location = models.CharField(max_length = 20)
 	description = models.CharField(max_length = 100)
 	proposed = models.CharField(max_length = 200)
 	organizer = models.ForeignKey(User, related_name='meetings_organized')

@@ -43,7 +43,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'userprofile',
     'meetings',
+    'crispy_forms',
 )
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 

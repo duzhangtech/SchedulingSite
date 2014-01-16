@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 #core
@@ -10,20 +11,34 @@ from django.contrib.auth.decorators import login_required
 from meetings.models import Meeting, Respond
 
 def index(request):
-	c = {}
-	c.update(csrf(request))
-	return render_to_response('index.html', c)
+	if not request.user.is_anonymous():
+		return HttpResponseRedirect("/loggedin")
+	else:
+		c = {}
+		c.update(csrf(request))
+		form = MyRegistrationForm()
+		form.fields['password1'].label = "密码"
+		form.fields['password2'].label = "再次输入密码"
+		c["form"] = form
+		return render_to_response('index.html', c)
 
 def auth_view(request):
 	username = request.POST.get('username', '')
 	password = request.POST.get('password', '')
 	user = auth.authenticate(username=username, password=password)
-
+	currentPath = request.POST.get('currentPath', '')
+	currentPath = currentPath.replace("invalid/", "").replace("registered/", "")
 	if user is not None:
 		auth.login(request, user)
-		return HttpResponseRedirect('/loggedin')
+		if "log" in currentPath:
+			return HttpResponseRedirect(currentPath)
+		else:
+			return HttpResponseRedirect('/loggedin')
 	else:
-		return HttpResponseRedirect('/invalid')
+		if "log" in currentPath:
+			return HttpResponseRedirect(currentPath + "invalid")
+		else:
+			return HttpResponseRedirect('/invalid')
 
 @login_required(login_url="/")
 def loggedin(request):
@@ -45,17 +60,35 @@ def logout(request):
 	auth.logout(request)
 	c = {}
 	c.update(csrf(request))
+	form = MyRegistrationForm()
+	form.fields['password1'].label = "密码"
+	form.fields['password2'].label = "再次输入密码"
+	c["form"] = form
 	return render_to_response('index.html', c)
 
 def register_user(request):
+	currentPath = request.POST.get('currentPath', '')
+	currentPath = currentPath.replace("invalid/", "").replace("registered/", "")
+	username=request.POST.get('email')
+	password=request.POST.get('password1')
 	if request.method == 'POST':
 		form = MyRegistrationForm(request.POST)
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect('/register_success')
-		
+			user = auth.authenticate(username=username, password=password)
+
+			if user is not None:
+				auth.login(request, user)
+			if "log" in currentPath:
+				return HttpResponseRedirect(currentPath)
+			else:
+				return HttpResponseRedirect('/register_success')
+		elif "log" in currentPath:
+			return HttpResponseRedirect(currentPath + "registered")
 	else:
 		form = MyRegistrationForm()
+		form.fields['password1'].label = "密码"
+		form.fields['password2'].label = "再次输入密码"
 	args = {}
 	args.update(csrf(request))
 	
@@ -64,9 +97,5 @@ def register_user(request):
 	return render_to_response('register.html', args)
 
 
-
 def register_success(request):
-	c = {}
-	c.update(csrf(request))
-	c['last_registered'] = True
-	return render_to_response('index.html', c)
+	return HttpResponseRedirect('/loggedin')

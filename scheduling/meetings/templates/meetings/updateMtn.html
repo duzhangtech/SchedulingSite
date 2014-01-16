@@ -12,34 +12,55 @@
   <div style="display:none;"id="specific_{{forloop.counter}}">{{num}}</div>
   {%endfor%}
 
-<div id = "formWrapper">
-<form action="update/" method="POST">{% csrf_token %}
-    <div id="formLocator1">
-    <h3>Please type the name of your meeting</h3>
-    <input type="textarea" value = '{{meeting.name}}'name="meeting_name" />
+
+<div id="createPageFirst">
+<form action="{% url 'meetings:create' %}" method="POST">{% csrf_token %}
+<div class="row">  
+    <div class="form-group">
+    <div class="col-md-6">
+      <h5>会议名称：</h5>
+      <input type="text" class="form-control" value="{{meeting.name}}"name="meeting_name" />
     </div>
-    <div id="formLocator2">
-    <h3>description</h3>
-    <input id="formDescription" value = '{{meeting.description}}'type="textarea" name="meeting_description" />
+  </div>
+</div>
+<div class="row">  
+    <div class="form-group">
+    <div class="col-md-6">
+      <h5>会议描述：</h5>
+      <input type="text" class="form-control" value="{{meeting.description}}" name="meeting_description" />
     </div>
-    <h3>Please type the username of those you would like to invite, separate by commas</h3>
-    <input type="textarea" value ="{{ alreadyInvited }}" id="shareTextarea" name="share" />
+  </div>
+</div>
+        
+
+      <div class="row">    
+      <div class="form-group">
+              <div class="col-md-6">
+    <label for="share">邀请：</label>
+    <input type="textarea" placeholder="请输入你想要邀请的人的邮箱地址，用逗号区别" value="{{alreadyInvited}}"class="form-control" name="share" />
+</div> </div></div>
     <input type="hidden" value="" id="dataStorage"name= "proposed">
+
 <!---->
 <br/>
-  <label for='visibility'>Want others to see?</label>
-  <input type='checkbox' checked='{{visibility}}'value='True' name='visibility'/>
-  <input type="submit" class="submit" value="submit" id="submit"/>
+<div class="row">
+  <div class="col-md-6">
+  <label for='visibility'>你是否想要被邀请者看到其他被邀请者?</label>
+  <input type='checkbox' value='True' name='visibility'/>
+  <button type="submit" class="btn btn-default pull-right" id="submit">创建</button>
+  </div>
+</div>
 </form>
 </div> <!--the end of formWrapper-->
 
+<div id="createPageSecond">
 <div id="scheduleUIwrapper">
 <div id='scrollWindow'>
  
   <div id="CalWrapper">
  <div id="clockWrapper">
   {% for time in clock %}
-  <h3 id ="clockTime">{{ time }}</h3><br/> 
+  <h5 id ="clockTime">{{ time }}</h5><br/> 
   {% endfor %}
   </div><!--end of clockWrapper-->
   <div id="container">
@@ -57,16 +78,15 @@
 <div id="dateWrapper">
 <a href='#' id='scopeLeft'>last</a>
 {% for day in date %}
-<h3 class="dateSpacer" id="dateSpacer_{{forloop.counter}}">{{ day }}</h3>
+<h5 class="dateSpacer text-center" id="dateSpacer_{{forloop.counter}}">{{ day }}</h5>
 {% endfor %}<!--header-->
 {% for day in datesForData %}
-<h3 class="datesForData" id="datesForData_{{forloop.counter}}">{{ day|date:"SHORT_DATE_FORMAT" }}</h3>
+<h5 class="datesForData text-center" id="datesForData_{{forloop.counter}}">{{ day|date:"SHORT_DATE_FORMAT" }}</h5>
 {% endfor %}<!--header-->
 <a href="#" id="scopeRight">next</a>
 </div><!--end of dateWrapper-->
-
-
 </div><!--end of scheduleUIWrapper-->
+</div>
 
 
 
@@ -443,12 +463,12 @@ $(document).mousemove( function(e) {
 //$('#col_1').after("<div id = 'aaa'style='position: absolute; font-size:5em;'>"+nearestY_new+"</div>");
  
 if(nearestY_new > 0){
-  $('#slot_'+counter+'').css({"height":""+nearestY_new+"%"});
+  $('#slot_'+counter+'').css({"height":"" + nearestY_new + "%"});
  }
  else{
   var nearestY_top = initTopPosition + nearestY_new;
-  $('#slot_'+counter+'').css({"top":""+nearestY_top+"%"});
-  $('#slot_'+counter+'').css({"height":""+(-nearestY_new)+"%"});
+  $('#slot_'+counter+'').css({"top":"" + nearestY_top + "%"});
+  $('#slot_'+counter+'').css({"height":"" + (2.4390 - nearestY_new) + "%"});
  }
 });  
 

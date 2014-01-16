@@ -1,25 +1,110 @@
 {% extends "dashboard.html" %}
+{% block topbar%}
+	{% if guest == "true" %}
+  <div id ="topBar" class="navbar navbar-static-top navbar-default">
+    <div class="container">
+    <a id＝'brand' class="navbar-brand" href="/">速议<h6 style='display:inline-block; margin-bottom: -20px;'>Beta</h6></a>
+  <p class="navbar-right navbar-text "><a href="/register">注册</a></p>
+    <form class ="navbar-form navbar-right" role="form"action="/auth/" method="POST">{% csrf_token %}
+  {% if last_invalid %}
+    <h5 id="loginWarning" class="navbar-text" style="margin-bottom:-20px;">*抱歉，用户名／密码组合不正确，请重试！</h5>
+  {% endif %}
+  {% if last_registered %}
+    <h5 id="loginWarning" class="navbar-text">*注册成功，请用您新注册的账号登录！</h5>
+  {% endif %}
+  <div class="form-group">
+    <label class="sr_only hidden" for="username">用户名</label>
+    <input class="form-control" type="text" placeholder="用户名／邮箱" name="username" id="username">
+  </div>
+  <div class="form-group">
+    <label class="sr_only hidden" for="password">密码</label>
+    <input class="form-control" type="password" name="password" placeholder="密码" id="password">
+  </div>
+    <button type="submit" class="btn btn-default" > 登录</button>
+  </form></div></div>
+  {% else %}
+    <div id ="topBar" class="navbar navbar-static-top navbar-default">
+    <div class="container">
+    <a id＝'brand' class="navbar-brand" href="/">速议<h6 style='display:inline-block; margin-bottom: -20px;'>Beta</h6></a>
+  <p class="navbar-right navbar-text "><a class="whitify" href="/logout">登出</a></p>
+    <p class="navbar-right navbar-text ">欢迎回来{{guest}}，<a class="whitify" href="/loggedin">{{ user }}</a>&nbsp;!</p>
+</div></div>
+  {% endif %}
+{% endblock%}
+
+
+
+
 
 {% block sidebar %}
+
+
     <ul>
-    	<li><a href="/loggedin/">{{user}}</a> {# is there a way to let the generic template access this full name?#}
-    	<li><a id="sideBarOrganized" href="">meetings you organized</a>
-{% if list_organized %} 
+    	<div class="row">
+    		<div class="col-md-6">
+    			<div style="color: #7080D7; font-size: 3.1em; margin-left: 10px;"><div class="glyphicon glyphicon-user"></div></div>
+    		</div>
+    		<div class="col-md-6">
+    			<div class="row" style="margin-top: -15px;">
+	    			<li><h3><a href="/loggedin/">{{user|upper}}</a></h3>
+	    		</div>
+	    		<div class="row" style="margin-top: -10px;">
+	    			<li><a style="margin-left:1px;"href="/logout/">登出</a>
+	    		</div>
+    		</div>
+    	</div>
+<br/>
+<li class="nav-header active">
+    <a  data-target="#userMenu" data-toggle="collapse" id="sideBarOrganized" href="#"><span class="caret"></span><span style="font-size: 1.2em;"> 我组织的会议</span></a>
+  <ul class="collapse in" id="userMenu">
+  	{% if list_organized %} 
 	{% for meeting in list_organized %}
-		<li class="organizedMeetingList"><a href="/loggedin/organized/{{meeting.meeting_id}}">{{ meeting.name }}</a></li>
+		<li role="presentation" style="margin-left: 10px; margin-top:10px;" class="organizedMeetingList"><a tabindex="-1" role="menuitem" href="/loggedin/organized/{{meeting.meeting_id}}"><p>{{ meeting.name }}</p></a></li>
+		<li class="divider"/>
 	{% endfor %}
 {% else %}
-	<p>No meeting is available.</p>
+	<li role="presentation" style="margin-left: 10px; margin-top:10px;" class="invitedMeetingList"><a tabindex="-1" role="menuitem" ><p>没有会议</p></a></li>
+	<li class="divider"/>
 {% endif %}
-    	<li><a id="sideBarInvited" href="">meetings you are invited to</a>
+  </ul>
+</li>
+<br/>
+<li class="nav-header">
+  <a data-target="#radioDJMenu" data-toggle="collapse" id="sideBarInvited" href="#"><span class="caret"></span><span style="font-size: 1.2em;"> 被邀请的会议</span></a>
+  <ul class="collapse" id="radioDJMenu">
 {% if list_invited %} 
 	{% for meeting in list_invited %}
-		<li class="invitedMeetingList"><a href="/loggedin/invited/{{meeting.meeting_id}}">{{ meeting.name }}</a></li>
+		<li role="presentation" style="margin-left: 10px; margin-top:10px;" class="invitedMeetingList"><a tabindex="-1" role="menuitem" href="/loggedin/invited/{{meeting.meeting_id}}"><p>{{ meeting.name }}</p></a></li>
+		<li class="divider"/>
 	{% endfor %}
 {% else %}
-	<p>No meeting is available.</p>
+	<li role="presentation" style="margin-left: 10px; margin-top:10px;" class="invitedMeetingList"><a tabindex="-1" role="menuitem" ><p>没有会议</p></a></li>
+	<li class="divider"/>
 {% endif %}
-    	<li><a href="{% url 'loggedin' %}createMtn/">organize new meeting</a>
-    	<li><a href="/logout/">logout</a>
+  </ul>
+</li>
+<br/>
+    	<li><a href="{% url 'loggedin' %}createMtn/"><button style="width:90%;" class="btn btn-success">组织新的会议</button></a>
+
     </ul>
+  <script type="text/javascript">
+  $('[data-toggle=collapse]').click(function(){
+	
+  	// toggle icon
+  	$(this).find("i").toggleClass("icon-angle-right icon-angle-down");
+  
+});
+
+
+$('.collapse').on('show', function (e) {
+  
+  	// hide open menus
+  	$('.collapse').each(function(){
+      if ($(this).hasClass('in')) {
+          $(this).collapse('toggle');
+      }
+    });
+  
+})
+  </script>
 {% endblock %}
