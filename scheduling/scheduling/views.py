@@ -53,6 +53,10 @@ def loggedin(request):
 def invalid_login(request):
 	c = {}
 	c.update(csrf(request))
+	form = MyRegistrationForm()
+	form.fields['password1'].label = "密码"
+	form.fields['password2'].label = "再次输入密码"
+	c["form"] = form
 	c['last_invalid'] = True
 	return render_to_response('index.html', c)
 

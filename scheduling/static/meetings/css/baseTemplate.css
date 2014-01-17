@@ -70,11 +70,24 @@ input{
 .container{
     width: 100%;
 }
+.symbol{
+    font-size: 3em;
+    color: #329D27;
+}
 /*CREATE PAGE*/
 #createForm{
     outline: 2px solid #ccc;
     outline-offset: 2em;
-
+}
+.outline{
+    outline: 2px solid #ccc;
+    outline-offset: 2em;
+}
+.pageTop{
+    margin-top: 5%;
+}
+.rowMargin{
+    margin-left: 2%;
 }
 /*BASE TEMPLATE*/
 .modal{

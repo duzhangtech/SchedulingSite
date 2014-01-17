@@ -74,7 +74,7 @@
     position: relative;
 }
 #scheduleUIwrapper{
-    position: absolute;
+    position: relative;
     width:70em;
     top: 120%;
     height: 40em;
@@ -226,13 +226,16 @@
 .availChoice{
     background-color: lawngreen;
     text-align: center;
+    border: 2px solid white;
 }
 .unavailChoice{
-    background-color: lightgray;
+    background-color: lightgrey;
     text-align: center;
+    border: 2px solid white;
 }
 .choiceBG{
-    background-color: lightgrey;
+    background-color: #eee;
+    border: 2px solid white;
 }
 .Answered{
     font-weight: 700;

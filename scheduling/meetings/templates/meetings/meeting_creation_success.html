@@ -1,9 +1,56 @@
 {%extends "loggedin.html" %}
 
 {%block content%}
-<h1>You have successfully created a meeting</h1>
-<h2>{{name}}</h2>
-<a href="{% url 'loggedin' %}">go home</a>
-<h4>Share the mtns with friends:</h4>
-<h6>http://localhost:8000/loggedin/invited/{{ id }}/</h6>
-{%endblock%}
+
+<div class="row" style="margin-top: -5px">
+  <div class="col-md-10">
+<div id="progressBar" style="width:116%;" class="progress">
+  <div  id="progressAnimation" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100" style="width: 66%">  </div>
+  </div>
+</div>
+</div>
+<div class="row" style=" margin-top:5%;">
+<div class="col-md-offset-1 col-md-9 outline">
+<div class="row">
+	<div class="col-md-1" style="margin-top:2%;">
+		<div class="glyphicon glyphicon-check symbol" ></div>
+	</div>
+	<div class="col-md-11">
+		<h1><strong>{{name}}</strong>的邀请函已经发出，请耐心等待回复！</h1>
+	</div>
+</div>
+<div class="row" >
+	<div class="">
+
+	</div>
+</div>
+<div class="row" style="margin-top:5%;">
+	<div class="">
+		<a href="{% url 'loggedin' %}">返回主页</a>
+	</div>
+</div>
+<div class="row" style="margin-top:5%;">
+	<div class="">
+		<h4>如果你的朋友不幸丢失了链接，请将下面的链接发给他们:</h4>
+
+		<input id="inviteLink" style="margin-top: 3%;"class="form-control" value="http://localhost:8000/loggedin/invited/{{ id }}/"/>
+
+	</div>
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+		$("#progressAnimation").css("width", "100%");
+
+});
+</script>
+<script type="text/javascript">
+window.onload = function(){
+  var text_input = document.getElementById ('inviteLink');
+  text_input.focus();
+  text_input.select();
+}
+</script>
+		{%endblock%}

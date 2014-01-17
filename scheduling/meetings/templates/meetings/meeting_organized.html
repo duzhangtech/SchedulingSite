@@ -1,24 +1,29 @@
 {%extends "loggedin.html"%}
 
 {% block content%}
-<div id = "wrapper">
+<div class="row pageTop">
+  <div class="col-md-offset-2 col-md-8">
+<div id = "wrapper" class="outline">
 <div class="row">
-  <h1 class="col-md-4">{{meeting.name}}</h1>
-  <div class="col-md-4">
+  <h1 class="col-md-10">{{meeting.name}}</h1>
+  <div class="col-md-2">
   <div class="row" style="margin-top:23px;">
    <form method="POST" action="update/">{% csrf_token %}<button class="btn btn-default" href='update/'>编辑</button></form><form method="POST" action="delete/">{% csrf_token %}   <button class="btn btn-warning" onclick ="return confirm('Are you sure to delete this meeting?')" value='' type='submit'>删除</button></form>
 </div></div>
 </div>
 <div class="row">
-  <h5 class="col-md-8">创建时间：{{meeting.pub_date}}</h5>
-</div>
-  <p><strong>会议描述</strong>：{{meeting.description}}</p>
-  <p><strong>会议地点</strong>：{{meeting.location}}</p>
-  <h5><strong>回复情况</strong>：{{replyCondition}}&nbsp; <a href="#" onclick = "viewFullList()" > 查看完整邀请者名单 </a></h5>
+  <div class="row rowMargin"><p><strong>创建时间</strong>：{{meeting.pub_date}}</p></div>
+  <div class="row rowMargin"><p><strong>会议描述</strong>：{{meeting.description}}</p></div>
+  <div class="row rowMargin"><p><strong>会议地点</strong>：{{meeting.location}}</p></div>
+  <div class="row rowMargin"><h5><strong>回复情况</strong>：{{replyCondition}}&nbsp; <a href="#" onclick = "viewFullList()" > 查看完整邀请者名单 </a></h5></div>
   <br>
 
   {{ listOfEmail|safe }}
-  {{ table|safe }}
+  <div class="table-responsive">
+
+    {{ table|safe }}
+
+  </div>
   <br>
   <h3>与受邀者分享这个链接:</h3>
   <h6>http://localhost:8000/loggedin/invited/{{ meeting.meeting_id }}/ </h6>
@@ -34,6 +39,9 @@
   <div style="display:none;"id="resultStorage">{{meeting.result}}</div>
 
 </div><!--end of wrapper-->
+</div>
+</div>
+</div>
 <!--JQEURY************************************************************************
 **********************************************************************************-->
   <script type="text/javascript"> // visualize the Y grid
