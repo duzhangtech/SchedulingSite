@@ -1,9 +1,12 @@
 {%extends "loggedin.html"%}
 {% load crispy_forms_tags %}
+
 {% block sidebar%}
 {% if guest == 'true' %}
-	<p style="left: 20%; max-width: 50%; position: absolute; top:15%;">想组织自己的速议？行云流水般工作，提高三倍执行力！</p>
-	<a style="position: absolute; left: 20%; top:28%;" data-toggle="modal" href="#videoModal" >注册速议账号／登录</a>		
+<div class="row">
+	<p class="col-md-offset-3"><br/><br/><br/><br/><br/>想组织自己的速议？<br/>行云流水般工作<br/>提高三倍执行力！<br/><br/><br/><br/><br/></p>
+	<a class="col-md-offset-3" data-toggle="modal" href="#videoModal" >注册速议账号／登录</a>		
+</div>
 {% else %}
     
 
@@ -129,7 +132,7 @@ $('.collapse').on('show', function (e) {
 </div>
 <!--Invited answer Form-->
 <div class="row">
-  <div class="col-md-5">
+  <div class="col-md-offset-1 col-md-7" style="margin-top: 8px;">
   <h2 class="removeMargin">{{meeting.name}}</h2>
   <p>{{meeting.description}}</p>
 </div>
@@ -140,6 +143,7 @@ $('.collapse').on('show', function (e) {
   <input style="display:none;"type="checkbox" name="selectedTime" id="dataCarrieravail_{{forloop.counter0}}" value="{{forloop.counter0}}">
   {%endfor%}
     <button class="btn btn-success" type="submit" id="submitData">回复这个会议</button>
+    <button class="btn btn-success" data-toggle="modal" href="#videoModal" id="submitDataPop">回复这个会议</button>
 </form>
 </div>
 </div>
@@ -184,10 +188,22 @@ $('.collapse').on('show', function (e) {
 <a href="#" id="scopeRight">next</a>
 </div><!--end of dateWrapper-->
 
+<input type="hidden" id="submitStatus" name="variable" value="{{ submit }}">
 
 </div><!--end of scheduleUIWrapper-->
 <script type="text/javascript">
+var submitStatus = $("#submitStatus").val();
+  if( submitStatus == 'True' ){
+    $("#submitDataPop").hide();
+  }
+  else{
+    $("#submitData").hide();
+  }
   $("#hint_id_password2").hide();
+  var currentPath = window.location.pathname; // for auth redirect
+if(currentPath.slice(-11) == "registered/" || currentPath.slice(-11) == "registered"){
+  $('#videoModal').modal('show');
+}
 </script>
 <!--JQEURY************************************************************************
 **********************************************************************************-->

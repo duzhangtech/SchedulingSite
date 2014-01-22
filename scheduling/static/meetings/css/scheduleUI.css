@@ -193,9 +193,9 @@
 
 /*invite page*/
 #scheduleUIwrapperInvite{
-    position: absolute;
-    width:50em;
-    top: 120%;
+    position: relative;
+    width:70em;
+    top: 4em;
     height: 40em;
 }
 /*#createAcct{

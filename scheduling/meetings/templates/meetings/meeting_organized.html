@@ -25,9 +25,14 @@
 
   </div>
   <br>
-  <h3>与受邀者分享这个链接:</h3>
-  <h6>http://localhost:8000/loggedin/invited/{{ meeting.meeting_id }}/ </h6>
+<div class="row" style="margin-top:5%;">
+  <div class="col-md-9">
+    <h4>如果你的朋友不幸丢失了链接，请将下面的链接发给他们:</h4>
 
+    <input id="inviteLink" style="margin-top: 3%;"class="form-control" value="http://localhost:8000/loggedin/invited/{{ meeting.meeting_id }}/"/>
+
+  </div>
+</div>
 <!-- data processing -->
   {% for num in data %}
  	<div style="display:none;"id="data_{{forloop.counter}}">{{num}}</div>
@@ -44,6 +49,13 @@
 </div>
 <!--JQEURY************************************************************************
 **********************************************************************************-->
+  <script type="text/javascript">
+window.onload = function(){
+  var text_input = document.getElementById ('inviteLink');
+  text_input.focus();
+  text_input.select();
+}
+</script>
   <script type="text/javascript"> // visualize the Y grid
 //***********************************window-size********************************
   var GLOBAL = {};

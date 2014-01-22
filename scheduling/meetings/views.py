@@ -25,6 +25,12 @@ def unzipEmails(value):
     value = [item.strip() for item in value.split(';') if item.strip()]
 
     return list(set(value))
+def unzipEmailsForInvitePage(value):
+    result = unzipEmails(value)
+    number = len(result)
+    result[0] = result[0].replace(str(number), '', 1)
+
+    return result
 
 def invitedEmailList(value):
     value = '$'.join(unzipEmails(value))
@@ -327,7 +333,7 @@ def MtnInvited(request, meeting_id, validity = ''):
     meeting = Meeting.objects.get(meeting_id = meeting_id)
     #update Meeting:
     inviteData = meeting.invitedList
-    share = unzipEmails(inviteData) # get the multiple emails
+    share = unzipEmailsForInvitePage(inviteData) # get the multiple emails
     for address in share:
         try: 
             u = User.objects.get(email = address)
@@ -350,7 +356,7 @@ def MtnInvited(request, meeting_id, validity = ''):
     if validity == "invalid":
         b['loginError'] = "您的密码／用户名组合不正确，请重新输入！" 
     if validity == "registered":
-        b['registerError'] = '您的账户已经被人注册啦'
+        b['registerError'] = "您的邮箱地址已被注册"
     b['clock'] = clock
     b['date'] = display
     form = MyRegistrationForm()
@@ -362,11 +368,14 @@ def MtnInvited(request, meeting_id, validity = ''):
     if not request.user.is_anonymous():
         b['user'] = request.user
         b['list_organized'] = request.user.meetings_organized.all()
-        b['list_invited'] = request.user.meetings_invited.all()     
+        b['list_invited'] = request.user.meetings_invited.all()
+        b['submit'] = "True"     
     else:
         b['user'] = ''
         b['list_organized'] = ''
         b['list_invited'] = '' 
+        b['submit'] = "False"     
+
     b['data'] = processor(meeting.proposed)  
     b['length'] = len(b['data'])/3
     b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)

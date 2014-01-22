@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 
 
-PROJECT_DIRECTORY = os.getcwd()
+PROJECT_DIRECTORY = os.path.realpath(os.path.dirname(__file__)) + '/../'
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 TEMPLATE_DIRS = (
@@ -106,7 +106,7 @@ STATIC_URL = '/static/'
 # Additional locations of static files
 
 STATICFILES_DIRS = (
-    os.path.join(os.getcwd(),'static/'),
+    PROJECT_DIRECTORY + 'static/',
 #     # Put strings here, like "/home/html/static" or "C:/www/django/static".
 #     # Always use forward slashes, even on Windows.
 #     # Don't forget to use absolute paths, not relative paths.
