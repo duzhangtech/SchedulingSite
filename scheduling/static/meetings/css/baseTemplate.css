@@ -75,10 +75,6 @@ input{
     color: #329D27;
 }
 /*CREATE PAGE*/
-#createForm{
-    outline: 2px solid #ccc;
-    outline-offset: 2em;
-}
 .outline{
     outline: 2px solid #ccc;
     outline-offset: 2em;

@@ -157,7 +157,7 @@ def create(request):
             inviteData = request.POST.get("share")
             new_meeting_object = Meeting(invitedList = invitedEmailList(inviteData), result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=index_generator(), description=request.POST.get('description') ,location= request.POST.get('location'), proposed = request.POST.get('proposed'), name=request.POST.get('name'), pub_date=timezone.now(), organizer=request.user)
             new_meeting_object.save()
-            if request.POST.get('visibility') == 'True':
+            if not request.POST.get('visibility') == 'True':
                 new_meeting_object.visibility = True;
                 new_meeting_object.save()
             share = unzipEmails(inviteData) # get the multiple emails
@@ -289,7 +289,7 @@ def updateMtn(request, meeting_id):
     a['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
     a['amountOfAvail'] = [x for x in range(0, a['length'])]
     a['alreadyInvited'] = ', '.join(x.email for x in meeting.invited.all())
-    if meeting.visibility == True:
+    if not meeting.visibility == True:
         a['visibility'] = 'checked'
     else:
         a['visibility'] = ''
@@ -301,7 +301,7 @@ def update(request, meeting_id):
     inviteData = request.POST.get('share')
     meeting = Meeting(invitedList = invitedEmailList(inviteData), pk = meeting.pk, result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=meeting.meeting_id, location = request.POST.get('location'), description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
     meeting.save()
-    if request.POST.get('visibility') == 'True':
+    if not request.POST.get('visibility') == 'True':
         meeting.visibility = True
     else:
         meeting.visibility = False
@@ -406,7 +406,8 @@ def respond(request, meeting_id):
     b['responded'] = "You have selected"
     choice = "".join(request.POST.getlist("selectedTime"))
     choice = str(filter(lambda x: x.isdigit(), choice))
-    if not request.user.is_anonymous():    
+    if not request.user.is_anonymous():
+        b['submit'] = "True"         
         try :
             c = request.user.response.get(meeting = meeting)
             choice = "".join(request.POST.getlist("selectedTime"))
@@ -427,6 +428,7 @@ def respond(request, meeting_id):
 
         return HttpResponseRedirect('/loggedin/invited/%s/responded' % meeting.meeting_id)
     else: #anonymous user
+        b['submit'] = "False"     
         d = meeting.responses.create(responder = request.POST.get('responderName'), choice = choice, pub_date=timezone.now())
         newResult = str(meeting.result)
         for letter in newResult:
@@ -444,6 +446,10 @@ def responded(request, meeting_id):
     b.update(csrf(request))
     b['clock'] = clock
     b['date'] = display
+    if not request.user.is_anonymous():
+        b['submit'] = "True"     
+    else:
+        b['submit'] = "False"    
     b['datesForData'] = datesForData
     b['meeting'] = meeting
     b['user'] = request.user
