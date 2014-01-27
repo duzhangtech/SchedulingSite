@@ -14,7 +14,7 @@
 
 
 <div id="createPageFirst">
-<form action="{% url 'meetings:update' %}" method="POST">{% csrf_token %}
+<form action="{% url 'meetings:update' meeting.meeting_id %}" method="POST">{% csrf_token %}
 <div class="row">  
     <div class="form-group">
     <div class="col-md-6">
@@ -75,14 +75,14 @@
   </div><!--end of CalWrapper-->
 </div>
 <div id="dateWrapper">
-<a href='#' id='scopeLeft'>last</a>
+<a href='#' class="scopeSwitch"id='scopeLeft'>上周</a>
 {% for day in date %}
 <h5 class="dateSpacer text-center" id="dateSpacer_{{forloop.counter}}">{{ day }}</h5>
 {% endfor %}<!--header-->
 {% for day in datesForData %}
 <h5 class="datesForData text-center" id="datesForData_{{forloop.counter}}">{{ day|date:"SHORT_DATE_FORMAT" }}</h5>
 {% endfor %}<!--header-->
-<a href="#" id="scopeRight">next</a>
+<a href="#" class="scopeSwitch" id="scopeRight">下周</a>
 </div><!--end of dateWrapper-->
 </div><!--end of scheduleUIWrapper-->
 </div>

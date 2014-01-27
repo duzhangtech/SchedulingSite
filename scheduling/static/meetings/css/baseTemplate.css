@@ -25,6 +25,20 @@ input{
 /*SIDE BAR*/
 /*******************************************************/
 
+/*ORGANIZER PAGE*/
+/*******************************************************/
+#addInvitee{
+    margin-top: 10px; 
+    margin-right: 10px;
+    height: 80%; 
+    width: 120px;
+}
+.organizerPageTimeTag{
+    max-width: 100px;
+    text-align: right;
+    background-color: #eee;
+    border: 2px solid white;
+}
 /*NAV BAR*/
 /*******************************************************/
 .navbar>.container .navbar-brand:hover{
@@ -84,6 +98,9 @@ input{
 }
 .rowMargin{
     margin-left: 2%;
+}
+.scopeSwitch{
+    color: #7080D7;
 }
 /*BASE TEMPLATE*/
 .modal{

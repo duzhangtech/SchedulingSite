@@ -25,10 +25,10 @@
         </div>
       </div>
 <br/>
-<li class="nav-header active">
+<li class="nav-header">
     <a data-target="#userMenu" data-toggle="collapse" id="sideBarOrganized" href="#"><span class="caret"></span><span style="font-size: 1.2em;"> 我组织的会议</span></a>
-  <ul class="collapse in" id="userMenu">
-    {% if list_organized %} 
+  <ul class="collapse" id="userMenu">
+{% if list_organized %} 
   {% for meeting in list_organized %}
     <li role="presentation" style="margin-left: 10px; margin-top:10px;" class="organizedMeetingList"><a tabindex="-1" role="menuitem" href="/loggedin/organized/{{meeting.meeting_id}}"><p>{{ meeting.name }}</p></a></li>
     <li class="divider"/>
@@ -40,9 +40,9 @@
   </ul>
 </li>
 <br/>
-<li class="nav-header">
+<li class="nav-header active">
   <a data-target="#radioDJMenu" data-toggle="collapse" id="sideBarInvited" href="#"><span class="caret"></span><span style="font-size: 1.2em;"> 被邀请的会议</span></a>
-  <ul class="collapse" id="radioDJMenu">
+  <ul class="collapse in" id="radioDJMenu">
 {% if list_invited %} 
   {% for meeting in list_invited %}
     <li role="presentation" style="margin-left: 10px; margin-top:10px;" class="invitedMeetingList"><a tabindex="-1" role="menuitem" href="/loggedin/invited/{{meeting.meeting_id}}"><p>{{ meeting.name }}</p></a></li>
@@ -55,7 +55,7 @@
   </ul>
 </li>
 <br/>
-      <li><a href="{% url 'loggedin' %}createMtn/"><button class="btn btn-success">组织新的会议</button></a>
+      <li><a href="{% url 'loggedin' %}createMtn/"><button style="width: 90%;" class="btn btn-success">组织新的会议</button></a>
 
     </ul>
   <script type="text/javascript">
@@ -178,14 +178,14 @@ $('.collapse').on('show', function (e) {
   </div><!--end of CalWrapper-->
 </div>
 <div id="dateWrapper">
-<a href='#' id='scopeLeft'>last</a>
+<a href='#' class="scopeSwitch"id='scopeLeft'>上周</a>
 {% for day in date %}
 <h5 class="dateSpacer text-center" id="dateSpacer_{{forloop.counter}}">{{ day }}</h5>
 {% endfor %}<!--header-->
 {% for day in datesForData %}
 <h5 class="datesForData text-center" id="datesForData_{{forloop.counter}}">{{ day|date:"SHORT_DATE_FORMAT" }}</h5>
 {% endfor %}<!--header-->
-<a href="#" id="scopeRight">next</a>
+<a href="#" class="scopeSwitch" id="scopeRight">下周</a>
 </div><!--end of dateWrapper-->
 
 <input type="hidden" id="submitStatus" name="variable" value="{{ submit }}">
@@ -202,7 +202,7 @@ var submitStatus = $("#submitStatus").val();
   $("#hint_id_password2").hide();
   var currentPath = window.location.pathname; // for auth redirect
 if(currentPath.slice(-11) == "registered/" || currentPath.slice(-11) == "registered"){
-  $('#videoModal').modal('show');
+  $('#videoModal').modal('show'); 
 }
 </script>
 <!--JQEURY************************************************************************

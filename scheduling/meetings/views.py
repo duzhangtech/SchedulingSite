@@ -17,6 +17,9 @@ from forms import MtnCreationForm
 from scheduling.forms import MyRegistrationForm
 import json
 # Define the date row
+
+
+
 def unzipEmails(value):
     if value in EMPTY_VALUES:
         return []
@@ -24,7 +27,7 @@ def unzipEmails(value):
     value = value.replace(',', ';')
     value = [item.strip() for item in value.split(';') if item.strip()]
 
-    return list(set(value))
+    return list(value)
 def unzipEmailsForInvitePage(value):
     result = unzipEmails(value)
     number = len(result)
@@ -33,11 +36,13 @@ def unzipEmailsForInvitePage(value):
     return result
 
 def invitedEmailList(value):
+    value = '$'.join(unzipEmails(value))    
+    return value
+def inviteesAdditionParser(value):
     value = '$'.join(unzipEmails(value))
-    length = value.count("$") + 1
-    
-    return str(length) + value
+    value = '$' + value
 
+    return value 
 def giveDate(num):
     if num == 0: return '周日'
     if num == 1: return '周一'
@@ -71,8 +76,14 @@ for num in range(0,11):
         clock.append(str(k%12)+"pm");
     elif k < 12 :
         clock.append(str(k%12)+"am");
-#data processing
-
+#conversation for organizer page
+def dateIntodateConversaion(value):
+    now = datetime(2014, int(value[:2]), int(value[-2:])).weekday()
+    now = giveDate(now + 1) 
+    if now == None:
+        now = '周日'
+    return now.decode('utf-8')
+#data processing    
 def singleProcessor(string):
     if string[0] == '0':
         if string[2] == '3':
@@ -123,9 +134,13 @@ def organizerPageProcessor(proposed):
     tempStorage = []
     num = len(proposed)/16
     for i in range(0,num):
-        tempStorage.append(proposed[16*i+8:16*i+10]+'/'+proposed[16*i+10:16*i+12]+'   ')
+        date = proposed[16*i+8:16*i+10]+'/'+proposed[16*i+10:16*i+12]
+        weekday = dateIntodateConversaion(date)
+        tempStorage.append(date+""+weekday)
         tempStorage.append(proposed[0+i*16:2+i*16]+":"+proposed[2+i*16:4+i*16]+'-'+proposed[4+i*16:6+i*16]+":"+proposed[6+i*16:8+i*16])
     tempStorage = [x+y for x,y in zip(tempStorage[0::2], tempStorage[1::2])]
+    #arrange according to date/time
+    tempStorage.sort()
     return tempStorage
 #6-digit random id generator
 def index_generator(size=6, chars=string.ascii_uppercase + string.digits):
@@ -214,25 +229,24 @@ def MtnOrganized(request, meeting_id):
     b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
     b['infoOnTop'] = organizerPageProcessor(meeting.proposed)
     b['amountOfAvail'] = [x for x in range(0, b['length'])]
-    b['listOfEmail'] = '<ul style = "display:none; " id = "viewFullList">'
-    for name in unzipEmails(meeting.invitedList[1::]):
+    b['listOfEmail'] = ""
+    for name in unzipEmails(meeting.invitedList):
     	b['listOfEmail'] = b['listOfEmail'] + "<li>" + name + "</li>"
-    b['listOfEmail'] = b['listOfEmail'] + "<li><a id = 'addMoreInvitees' href = 'update/' >+</a></li>" + '</ul>'
     responsesCount = str(meeting.responses.count())
     if responsesCount in EMPTY_VALUES:
     	responsesCount = '0'
-    b['replyCondition'] =  responsesCount + "/" + meeting.invitedList[:1] + u" 位被邀请者已答复"
+    b['replyCondition'] =  responsesCount + "/" + str(meeting.invitedList.count("$")+1) + u" 位被邀请者已答复"
 #processing for responses--------------
-    k = '<td>&#32</td>'
+    k = '<td class="">&#32</td>'
 #first row
     responders = meeting.responses.all()
     w = [e.responder.username for e in responders]
     invitees = meeting.invited.all()
     for invitee in w:
-    	k = k + '<td class ="Answered" >'+invitee+'</td>'
+    	k = k + '<td class ="Answered " >'+invitee+'</td>'
     for invitee in invitees:
     	if invitee.username not in w:
-    		k = k + '<td class ="unAnswered">'+invitee.username+'</td>'
+    		k = k + '<td class ="unAnswered ">'+invitee.username+'</td>'
     k = '<tr>'+k+'</tr>'	
 #other rows
     counter = -1 
@@ -240,7 +254,7 @@ def MtnOrganized(request, meeting_id):
     for num in organizerPageProcessor(meeting.proposed):
         counter = counter + 1
         k = k + '<tr>'
-        k = k + '<td id ='+ '"meeting' + str(counter) + '">'+ num +'</td>'
+        k = k + '<td class="organizerPageTimeTag" id ='+ '"meeting' + str(counter) + '">'+ num +'</td>'
         avail = 0.00
         for x in range(0, meeting.invited.count()):
             try:
@@ -299,7 +313,7 @@ def update(request, meeting_id):
     meeting = Meeting.objects.get(meeting_id = meeting_id,)
     length = len(request.POST['proposed'])/16
     inviteData = request.POST.get('share')
-    meeting = Meeting(invitedList = invitedEmailList(inviteData), pk = meeting.pk, result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=meeting.meeting_id, location = request.POST.get('location'), description=request.POST['meeting_description'] ,proposed = request.POST['proposed'], name=request.POST['meeting_name'], pub_date=timezone.now(), organizer=request.user)
+    meeting = Meeting(invitedList = invitedEmailList(inviteData), pk = meeting.pk, result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=meeting.meeting_id, location = request.POST.get('location', ''), description=request.POST.get('meeting_description') ,proposed = request.POST.get('proposed'), name=request.POST.get('meeting_name'), pub_date=timezone.now(), organizer=request.user)
     meeting.save()
     if not request.POST.get('visibility') == 'True':
         meeting.visibility = True
@@ -460,7 +474,39 @@ def responded(request, meeting_id):
     b['length'] = len(b['data'])/3
     b['specificTimeDispaly'] = descriptionProcessor(meeting.proposed)
     b['amountOfAvail'] = [x for x in range(0, b['length'])]
-    b['responded'] = "You have selected, just submit another form to update your results"
+    b['responded'] = "您已回复过这个会议，如需修改，请直接提交新回答"
 #update the new mtn
 # result processing
     return render_to_response('meetings/meeting_invited.html', b)
+def addInvitees(request, meeting_id):
+    meeting = Meeting.objects.get(meeting_id = meeting_id)
+    inviteData = request.POST.get('addInvitees')
+    invitedList = meeting.invitedList + inviteesAdditionParser(inviteData)
+    #data re-processing:
+    meeting.invitedList = invitedList
+    meeting.save()
+
+    share = unzipEmails(inviteData) # get the multiple emails
+    #meeting.invited.clear()
+    for address in share:
+        try: 
+            u = User.objects.get(email = address)
+            meeting.invited.add(u)
+        except ObjectDoesNotExist:
+            try:
+                u = User.objects.get(username = address)
+                meeting.invited.add(u)
+            except ObjectDoesNotExist:
+                pass
+        meeting.save()
+    #delete the responses from deleted invitees
+
+
+    return HttpResponseRedirect('/loggedin/organized/%s/' % meeting.meeting_id)
+def ajaxTest(request):
+    if request.method == 'POST':
+        testMessage = request.POST.get('testMessage')
+    else:
+        testMessage = ''
+
+    return HttpResponse("<li>%s</li>" % testMessage)
