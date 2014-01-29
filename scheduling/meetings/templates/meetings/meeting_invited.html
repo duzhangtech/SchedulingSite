@@ -131,6 +131,7 @@ $('.collapse').on('show', function (e) {
   </div>
 </div>
 <!--Invited answer Form-->
+<div class="row" style="border-bottom: 2px solid lightgrey; ">
 <div class="row">
   <div class="col-md-offset-1 col-md-7" style="margin-top: 8px;">
   <h2 class="removeMargin">{{meeting.name}}</h2>
@@ -147,8 +148,19 @@ $('.collapse').on('show', function (e) {
 </form>
 </div>
 </div>
-  <h5>{{responded}}</h5>
-  <h5>{{othersInvited}}</h5>
+
+<div class= "row">
+  <div class= "row">
+    <div class="col-md-offset-1">
+      <h5 class="">{{responded}}</h5>
+    </div>
+  </div>
+  <div class= "row">
+    <div class="col-md-offset-2">
+      <h5>{{othersInvited}}</h5>
+    </div>
+  </div>
+</div>
   {%for num in data%}
  	<div style="display:none;"id="data_{{forloop.counter}}">{{num}}</div>
   {%endfor%}
@@ -156,9 +168,11 @@ $('.collapse').on('show', function (e) {
  	<div style="display:none;"id="specific_{{forloop.counter}}">{{num}}</div>
   {%endfor%} 
   <div style="display:none;"id="lengthStorage">{{length}}</div>
+
+</div>
 <div id="scheduleUIwrapperInvite">
 <div id='scrollWindow'>
- 
+
   <div id="CalWrapper">
  <div id="clockWrapper">
   {% for time in clock %}
@@ -191,6 +205,7 @@ $('.collapse').on('show', function (e) {
 <input type="hidden" id="submitStatus" name="variable" value="{{ submit }}">
 
 </div><!--end of scheduleUIWrapper-->
+
 <script type="text/javascript">
 var submitStatus = $("#submitStatus").val();
   if( submitStatus == 'True' ){
