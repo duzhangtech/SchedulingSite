@@ -6,6 +6,15 @@ a{
     text-decoration: none;
     color: #888;
 }
+a:hover{
+    text-decoration: none;
+}
+.hyperLink{
+    color: #888;
+    selection: none;
+    -moz-selection: none;
+    -webkit-selection: none;
+}
 ul{
     list-style-type: none;
 }

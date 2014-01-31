@@ -18,8 +18,6 @@ from scheduling.forms import MyRegistrationForm
 import json
 # Define the date row
 
-
-
 def unzipEmails(value):
     if value in EMPTY_VALUES:
         return []
@@ -162,6 +160,20 @@ a['datesForData'] = datesForData
 #    a['list_invited'] = request.user.meetings_invited.all()
 #    return render_to_response("meetings/createMtn.html", a)
 
+#EMAIL************************************************************************
+
+from django.template.loader import get_template
+from django.template import Context
+from django.core.mail import EmailMultiAlternatives
+def sendInvitation(sender, invitee, meeting_id, meeting_name):
+    htmly = get_template('meetings/inviteEmail.html')
+    d = Context({'sender':sender.username,'id': meeting_id, 'name': meeting_name })
+    subject, from_email, to = u'您收到了一个来自%s的速议邀请' % sender.username, sender.email, invitee
+    text_content = 'http://www.suyi1.com/loggedin/invited/%s/' % meeting_id
+    html_content = htmly.render(d)
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+    msg.attach_alternative(html_content, "text/html")
+    msg.send(fail_silently=True, )
 
 def create(request):
     # the raw value for result
@@ -170,7 +182,7 @@ def create(request):
         if form.is_valid():
             length = len(request.POST.get('proposed'))/16
             inviteData = request.POST.get("share")
-            new_meeting_object = Meeting(invitedList = invitedEmailList(inviteData), result = ''.join(map(str, [k for k in range(0,length)])), meeting_id=index_generator(), description=request.POST.get('description') ,location= request.POST.get('location'), proposed = request.POST.get('proposed'), name=request.POST.get('name'), pub_date=timezone.now(), organizer=request.user)
+            new_meeting_object = Meeting(invitedList = invitedEmailList(inviteData), result = ''.join(map(str, [k for k in range(0,length)])), meeting_id = index_generator(), description=request.POST.get('description') ,location= request.POST.get('location'), proposed = request.POST.get('proposed'), name=request.POST.get('name'), pub_date=timezone.now(), organizer=request.user)
             new_meeting_object.save()
             if not request.POST.get('visibility') == 'True':
                 new_meeting_object.visibility = True;
@@ -187,8 +199,10 @@ def create(request):
                     except ObjectDoesNotExist:
                         pass
                 new_meeting_object.save()
+            sendInvitation(request.user, share, new_meeting_object.meeting_id, new_meeting_object.name)
             request.session['meeting_name'] = new_meeting_object.name
             request.session['meeting_id'] = new_meeting_object.meeting_id
+
             return HttpResponseRedirect('/loggedin/createSuccess/')
     else:
         form = MtnCreationForm()
@@ -333,6 +347,7 @@ def update(request, meeting_id):
             except ObjectDoesNotExist:
     			pass
         meeting.save()
+    sendInvitation(request.user, share, meeting.meeting_id, meeting.name)
    	#delete the responses from deleted invitees
     responders = meeting.responses.all()
     w = [e.responder for e in responders]

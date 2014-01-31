@@ -63,25 +63,36 @@ ROOT_URLCONF = 'scheduling.urls'
 
 WSGI_APPLICATION = 'scheduling.wsgi.application'
 
+#Email Servers
+EMAIL_USE_TLS = True
+
+EMAIL_HOST = 'smtp.gmail.com'
+
+EMAIL_HOST_USER = 'duzhangtech@gmail.com'
+
+EMAIL_HOST_PASSWORD = 'Starcraft2'
+
+EMAIL_PORT = 587
+
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 DATABASES = {
 
-   'default': {
-       'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-       'NAME': 'first',                      # Or path to database file if using sqlite3.
-       'USER': 'root',                  # Not used with sqlite3.
-       'PASSWORD': 'Starcraft2',                   # Not used with sqlite3.
-       'HOST': 'localhost',                # Set to empty string for localhost. Not used with sqlite3.
-       'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
+#   'default': {
+#       'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+#       'NAME': 'first',                      # Or path to database file if using sqlite3.
+#       'USER': 'root',                  # Not used with sqlite3.
+#       'PASSWORD': 'Starcraft2',                   # Not used with sqlite3.
+#       'HOST': 'localhost',                # Set to empty string for localhost. Not used with sqlite3.
+#       'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+#    }
 
-#'default':{
-#    'ENGINE': 'django.db.backends.sqlite3',
-#    'NAME': 'mydb',
-#}
+'default':{
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': 'mydb',
+}
 }
 
 
