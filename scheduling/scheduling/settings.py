@@ -44,8 +44,11 @@ INSTALLED_APPS = (
     'userprofile',
     'meetings',
     'crispy_forms',
+    'django_jasmine',
 )
-
+JASMINE_TEST_DIRECTORY = (
+        PROJECT_DIRECTORY + 'static/' + 'js/'
+    )
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
@@ -80,19 +83,19 @@ EMAIL_PORT = 587
 
 DATABASES = {
 
-   'default': {
-       'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-       'NAME': 'first',                      # Or path to database file if using sqlite3.
-       'USER': 'root',                  # Not used with sqlite3.
-       'PASSWORD': 'Starcraft2',                   # Not used with sqlite3.
-       'HOST': 'localhost',                # Set to empty string for localhost. Not used with sqlite3.
-       'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
+#   'default': {
+#       'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+#       'NAME': 'first',                      # Or path to database file if using sqlite3.
+#       'USER': 'root',                  # Not used with sqlite3.
+#       'PASSWORD': 'Starcraft2',                   # Not used with sqlite3.
+#       'HOST': 'localhost',                # Set to empty string for localhost. Not used with sqlite3.
+#       'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+#    }
 
-#'default':{
-#    'ENGINE': 'django.db.backends.sqlite3',
-#    'NAME': 'mydb',
-#}
+'default':{
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': 'mydb',
+}
 }
 
 

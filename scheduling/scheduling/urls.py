@@ -4,6 +4,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
 	(r'^', include('userprofile.urls')),
+	(r'^jasmineTest/$', include('django_jasmine.urls')),
 	(r'^loggedin/', include('meetings.urls', namespace='meetings')),
 	# DO I NEED TO CHANGE THIS???
 	url(r'^database/admin/', include(admin.site.urls)),
