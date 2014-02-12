@@ -48,7 +48,7 @@ $(document).ready(function(){
    {%block topbar%}
   <div id ="topBar" class="navbar navbar-static-top navbar-default">
     <div class="container">
-    <a id＝'brand' class="navbar-brand" href="/">速议<h6 style='display:inline-block; margin-bottom: -20px;'>Beta</h6></a>
+    <a id＝'brand' style="background-position: -3% -3px; background-size: 28%; background-repeat: no-repeat; background-image: url(/static/meetings/image/logo.jpg); " class="navbar-brand" href="/">速议<h6 style='display:inline-block; margin-bottom: -20px;'>Beta</h6></a>
   <p class="navbar-right navbar-text "><a class="whitify" data-toggle="modal" href="#videoModal">注册</a></p>
     <form class ="navbar-form navbar-right" role="form" action="/auth/" method="POST">{% csrf_token %}
   {% if last_invalid %}
