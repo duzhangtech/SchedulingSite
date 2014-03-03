@@ -1,0 +1,300 @@
+{% extends "dashboard.html"%}
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{%load static%}
+<html lang="en">
+
+<head>
+    {% block head%}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Landing Page Template for Bootstrap</title>
+    
+  <link href="{% static 'meetings/css/bootstrap.min.css' %}" rel="stylesheet" media="screen">  
+  <link href="{% static 'meetings/css/ui-lightness/jquery-ui-1.10.3.custom.css' %}" rel="stylesheet">
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=true"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type="text/javascript" src="{% static 'meetings/js/jquery.hotkeys.js' %}"></script>
+  <script type="text/javascript" src="{% static 'meetings/js/jquery-ui-1.10.3.custom.js' %}"></script>
+  <script type='text/javascript' src="{% static 'meetings/js/jQuery-UI-Resizable-Snap-extension.js' %}"></script>  
+  <script type="text/javascript" src="{% static 'meetings/js/bootstrap.min.js' %}"></script>
+    <!-- Bootstrap core CSS -->
+    <!-- Custom Google Web Font -->
+    <!-- Add custom CSS here -->
+    <link href="{% static 'meetings/css/landing-page.css' %}" rel="stylesheet">
+<script type="text/javascript">
+$(document).ready(function(){
+
+  $("#ajaxTest").keyup(function(){
+
+      $.ajax({
+          type: "POST",
+          url: "/loggedin/ajaxTest/",
+          data: { 
+              "testMessage": $("#ajaxTest").val(),
+              "csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val(),
+          },
+          success: testSuccess,
+          dataType: "html",
+
+      });
+
+  });
+
+});
+  var testSuccess = function(data, textStatus)
+  {
+    $("#ajaxTestResult").html(data);
+  };
+</script>
+  <!--BOOTSTRAP-->
+
+</head>
+{% endblock %}
+<body>
+<div class="modal fade" id="videoModal" style="display:none;" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">    
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="removeMargin">登录／注册</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+<div> <!-- registration form-->
+{% for field in form %}
+  {{field.error}}
+{% endfor %}
+<div class="col-md-6" style="border-right-style:solid; border-color: #DDD; border-width:2px;" >
+<form action="/register/" method="POST">{% csrf_token %}
+  {{form|crispy}}
+  <input type='hidden' name = "currentPath" class = "currentPath"value=''/>
+  <input type="submit" class="btn btn-success" style="width: 50%; margin-left: 25%;" value="注册" />
+</form>
+<div id="registerError">{{registerError}}</div>
+</div>
+<div class="col-md-6">
+{% if form.errors %}
+  <p class="error">不好意思，用户名或者密码不正确</p>
+{% endif %}
+<form action="/auth/" method="POST">{% csrf_token %}
+<div class="form-group">
+  <label for="username">用户名:</label>
+  <input type="text" name="username" class="form-control" placeholder="用户名／邮箱" id="username">
+</div>
+<div class="form-group">
+  <label for="password">密码:</label>
+  <input type="password" name="password" class="form-control" placeholder="密码" id="password">
+</div>
+<div class="form-group">
+  <button type="submit" class="btn btn-default" style="width: 50%; margin-left: 25%;">登录</button>
+</div>
+</form>
+  <input type='hidden' name = "currentPath" class = "currentPath"value=''/>
+<div id="loginError">{{loginError}}</div>
+</div>
+        </div>
+          </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+   {%block topbar%}
+       <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/" style="margin-left: 0px; font-size:32px;">速议<span style="font-size: 15px;">Alpha</span></a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="#about">关于我们</a>
+                    </li>
+                    <li><a href="#services">服务产品</a>
+                    </li>
+                    <li><a href="#contact">联系作者</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+
+  <p class="navbar-right navbar-text "><a class="whitify" data-toggle="modal" href="#videoModal">注册</a></p>
+    <form class ="navbar-form navbar-right" role="form" action="/auth/" method="POST">{% csrf_token %}
+  {% if last_invalid %}
+    <h5 id="loginWarning" class="navbar-text" style="margin-bottom:-20px;">*抱歉，用户名／密码组合不正确，请重试！</h5>
+  {% endif %}
+  {% if last_registered %}
+    <h5 id="loginWarning" class="navbar-text">*注册成功，请用您新注册的账号登录！</h5>
+  {% endif %}
+  <div class="form-group">
+    <label class="sr_only hidden" for="username">用户名</label>
+    <input class="form-control" type="text" placeholder="用户名／邮箱" name="username" id="username">
+  </div>
+  <div class="form-group">
+    <label class="sr_only hidden" for="password">密码</label>
+    <input class="form-control" type="password" name="password" placeholder="密码" id="password">
+  </div>
+    <button type="submit" class="btn btn-default" > 登录</button>
+  </form>
+        </div>
+        <!-- /.container -->
+    </nav>
+{% endblock %}
+{% block frontpage%}
+    <div class="intro-header">
+
+        <div class="container">
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="intro-message">
+                        <h1>速议Beta</h1>
+                        <h3>节省您的会议组织时间</h3>
+                        <hr class="intro-divider">
+                        <ul class="list-inline intro-social-buttons">
+                            <li><a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">人人</span></a>
+                            </li>
+                            <li><a href="https://github.com/IronSummitMedia/startbootstrap" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">微博</span></a>
+                            </li>
+                            <li><a data-toggle="modal" href="#videoModal" class="btn btn-default btn-lg"><span  data-toggle="modal" href="#videoModal" class="network-name">开始使用</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.intro-header -->
+
+    <div class="content-section-a">
+
+        <div class="container">
+
+            <div class="row">
+                <div class="col-lg-5 col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">让客户感受到您的专业:
+                        </br></br>电话？微信？短信？</h2>
+                    <p class="lead">在德国，99%的企业使用在线时间管理工具邀请客户参与会议</p>
+                </div>
+                <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+                    <img class="img-responsive" src="{% static 'meetings/image/ipad.png' %}" alt="">
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.content-section-a -->
+
+    <div class="content-section-b">
+
+        <div class="container">
+
+            <div class="row">
+                <div class="col-lg-5 col-lg-offset-1 col-sm-push-6  col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">移动端后台管理系统：
+                        <br><br>随时随地</h2>
+                    <p class="lead">再次登录，轻松管理所有会议，更改行程，随时随地！</p>
+                </div>
+                <div class="col-lg-5 col-sm-pull-6  col-sm-6">
+                    <img class="img-responsive" src="{% static 'meetings/image/doge.png' %}" alt="">
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.content-section-b -->
+
+    <div class="content-section-a">
+
+        <div class="container">
+
+            <div class="row">
+                <div class="col-lg-5 col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">升级后个性化定制数据库：  
+                        <br><br>高效邀请</h2>
+                    <p class="lead">打入几个字符，智能化猜测您的邀请选择</p>
+                </div>
+                <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+                    <img class="img-responsive" src="{% static 'meetings/image/phones.png' %}" alt="">
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.content-section-a -->
+
+    <div class="banner">
+
+        <div class="container">
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <h2>速议Beta: 5月1日全面开启！</h2>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.banner -->
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="list-inline">
+                        <li><a href="#home">Home</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li><a href="#about">About</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li><a href="#services">Services</a>
+                        </li>
+                        <li class="footer-menu-divider">&sdot;</li>
+                        <li><a href="#contact">Contact</a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted small">Copyright &copy; Your Company 2013. All Rights Reserved</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/jquery-1.10.2.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script type="text/javascript">
+  $("#hint_id_password2").hide();
+</script>
+{% endblock %}
+</body>
+
+</html>

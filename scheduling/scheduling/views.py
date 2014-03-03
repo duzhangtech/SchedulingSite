@@ -9,7 +9,8 @@ from forms import MyRegistrationForm
 from django.contrib.auth.decorators import login_required
 #models
 from meetings.models import Meeting, Respond
-
+def ready(request):
+	return render_to_response('ready.html')
 def index(request):
 	if not request.user.is_anonymous():
 		return HttpResponseRedirect("/loggedin")
@@ -68,7 +69,7 @@ def logout(request):
 	form.fields['password1'].label = "密码"
 	form.fields['password2'].label = "再次输入密码"
 	c["form"] = form
-	return render_to_response('index.html', c)
+	return render_to_response('ready.html', c)
 
 def register_user(request):
 	currentPath = request.POST.get('currentPath', '')

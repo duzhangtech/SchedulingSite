@@ -9,6 +9,7 @@ urlpatterns = patterns('',
 	# DO I NEED TO CHANGE THIS???
 	url(r'^database/admin/', include(admin.site.urls)),
 	url(r'^$',  'scheduling.views.index'),
+	url(r'^ready/$',  'scheduling.views.ready'),
 	url(r'^auth/$',  'scheduling.views.auth_view'),
 	url(r'^logout/$', 'scheduling.views.logout'),
 	url(r'^loggedin/$', 'scheduling.views.loggedin', name='loggedin'),
