@@ -69,7 +69,7 @@ def logout(request):
 	form.fields['password1'].label = "密码"
 	form.fields['password2'].label = "再次输入密码"
 	c["form"] = form
-	return render_to_response('ready.html', c)
+	return render_to_response('index.html', c)
 
 def register_user(request):
 	currentPath = request.POST.get('currentPath', '')
