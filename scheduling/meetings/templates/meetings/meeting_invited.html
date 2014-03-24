@@ -138,13 +138,25 @@ $('.collapse').on('show', function (e) {
 </div>
 <div class="col-md-4">
   <h6>组织者：{{meeting.organizer}} 于{{meeting.pub_date}}创建</h6>
-<form class="col-md-offset-5" method="POST" action="respond/">{% csrf_token %}
+<form id="respondForm"class="col-md-offset-5" method="POST" action="respond/">{% csrf_token %}
   {%for num in amountOfAvail%}
   <input style="display:none;"type="checkbox" name="selectedTime" id="dataCarrieravail_{{forloop.counter0}}" value="{{forloop.counter0}}">
   {%endfor%}
-    <button class="btn btn-success" type="submit" id="submitData">回复这个会议</button>
+    <input type="hidden" name="selectedTimeField" id="selectedTimeField" value="">
+    <button class="btn btn-success" type="submit" onsubmit="" id="submitData">回复这个会议</button>
     <button class="btn btn-success" data-toggle="modal" href="#videoModal" id="submitDataPop">回复这个会议</button>
 </form>
+  <script type="text/javascript">
+$( "#respondForm" ).submit(function( event ) {
+    var arr=[];
+
+    $('input:checkbox[name=selectedTime][checked=checked]').each(function(){
+        arr.push($(this).val());
+    });
+
+    $('#selectedTimeField').val(arr.join(''));
+  });
+  </script>
 </div>
 </div>
 

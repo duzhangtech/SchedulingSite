@@ -433,14 +433,15 @@ def respond(request, meeting_id):
     b['meeting'] = meeting    
     b['amountOfAvail'] = [x for x in range(0, b['length'])]
     b['responded'] = "You have selected"
-    choice = "".join(request.POST.getlist("selectedTime"))
-    choice = str(filter(lambda x: x.isdigit(), choice))
+    # choice = "".join(request.POST.getlist("selectedTime"))
+    choice = request.POST.get("selectedTimeField")
+    # choice = str(filter(lambda x: x.isdigit(), choice))
     if not request.user.is_anonymous():
         b['submit'] = "True"         
         try :
             c = request.user.response.get(meeting = meeting)
-            choice = "".join(request.POST.getlist("selectedTime"))
-            choice = str(filter(lambda x: x.isdigit(), choice))
+            choice = request.POST.get("selectedTimeField")
+            # choice = str(filter(lambda x: x.isdigit(), choice))
             c.choice = choice
             c.save()
         except ObjectDoesNotExist:
